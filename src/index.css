@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@layer base {
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family:
+      "Quicksand",
+      "Segoe UI",
+      Tahoma,
+      Geneva,
+      Verdana,
+      sans-serif;
+  }
+
+  /* Preflight does not set pointer on <button>; raw buttons used across the app need this. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* Home hero — animated gradient text (see STYLING.md) */
+.kana-hero-title {
+  background: linear-gradient(
+    90deg,
+    #ec4899,
+    #a855f7,
+    #3b82f6,
+    #ec4899
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 4s ease infinite;
+}
+
+.kana-details-section summary svg {
+  transition: transform 0.2s ease;
+}
+
+.kana-details-section[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.kana-hero-title-glow {
+  background: linear-gradient(
+    90deg,
+    #ec4899,
+    #a855f7,
+    #3b82f6,
+    #ec4899
+  );
+  background-size: 200% 100%;
+  animation: gradient-shift 4s ease infinite;
+}

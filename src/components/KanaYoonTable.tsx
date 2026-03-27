@@ -1,0 +1,85 @@
+import { Fragment } from "react";
+import type { KanaRow } from "@/api/types";
+import { KanaTile } from "@/components/KanaTile";
+import { kanaKey } from "@/lib/kanaKeys";
+import {
+  YOON_COL_LABELS,
+  YOON_MATRIX,
+  YOON_ROW_LABELS,
+} from "@/lib/extraKanaLayout";
+
+type Props = {
+  yoonItems: KanaRow[];
+  selected: Set<string>;
+  onToggle: (key: string, row: KanaRow) => void;
+};
+
+/** Yoon 11×3 grid; order matches catalog. */
+export function KanaYoonTable({
+  yoonItems,
+  selected,
+  onToggle,
+}: Props) {
+  const rows = YOON_MATRIX.length;
+  const cols = 3;
+
+  function cellAt(ri: number, ci: number): KanaRow | undefined {
+    const idx = ri * cols + ci;
+    return yoonItems[idx];
+  }
+
+  return (
+    <div className="overflow-x-auto rounded-xl border border-gray-200 bg-pink-50/40 p-2 sm:p-4">
+      <div
+        className="mx-auto grid w-full min-w-[min(100%,380px)] gap-1.5 sm:min-w-[420px] sm:gap-2"
+        style={{
+          gridTemplateColumns:
+            "minmax(1.75rem,2rem) repeat(3, minmax(2.25rem, 1fr))",
+          gridTemplateRows: `auto repeat(${rows}, auto)`,
+        }}
+      >
+        <div className="col-start-1 row-start-1" aria-hidden />
+
+        {YOON_COL_LABELS.map((h, ci) => (
+          <div
+            key={h}
+            className="flex items-end justify-center pb-0.5 text-center text-[10px] font-semibold text-gray-600 sm:text-xs"
+            style={{ gridColumn: ci + 2, gridRow: 1 }}
+          >
+            {h}
+          </div>
+        ))}
+
+        {YOON_MATRIX.map((_, ri) => (
+          <Fragment key={YOON_ROW_LABELS[ri]}>
+            <div
+              className="flex items-center justify-end pr-1 text-[10px] font-semibold text-gray-600 sm:text-xs"
+              style={{ gridColumn: 1, gridRow: ri + 2 }}
+            >
+              {YOON_ROW_LABELS[ri]}
+            </div>
+            {Array.from({ length: cols }, (_, ci) => {
+              const kana = cellAt(ri, ci);
+              return (
+                <div
+                  key={`${ri}-${ci}`}
+                  className="flex min-w-0 items-center justify-center"
+                  style={{ gridColumn: ci + 2, gridRow: ri + 2 }}
+                >
+                  {kana ? (
+                    <KanaTile
+                      row={kana}
+                      selected={selected.has(kanaKey(kana))}
+                      onToggle={() => onToggle(kanaKey(kana), kana)}
+                      layout="table"
+                    />
+                  ) : null}
+                </div>
+              );
+            })}
+          </Fragment>
+        ))}
+      </div>
+    </div>
+  );
+}
