@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import type { KanaRow } from "@/api/types";
 import { KanaTile } from "@/components/KanaTile";
+import { useMinWidthLg } from "@/hooks/useMinWidthLg";
 import { kanaKey } from "@/lib/kanaKeys";
 import {
   DAKUTEN_HAND_ROW_LABELS,
@@ -21,6 +22,7 @@ export function KanaDakutenTable({
   selected,
   onToggle,
 }: Props) {
+  const isLg = useMinWidthLg();
   const rows = 5;
   const cols = 5;
 
@@ -32,8 +34,68 @@ export function KanaDakutenTable({
     return handakutenItems[ci];
   }
 
+  const wrapClass =
+    "overflow-x-auto rounded-xl border border-gray-200 bg-pink-50/40 p-2 sm:p-4";
+
+  if (isLg) {
+    return (
+      <div className={wrapClass}>
+        <div
+          className="mx-auto grid w-full min-w-[min(100%,420px)] gap-1.5 sm:min-w-[480px] sm:gap-2"
+          style={{
+            gridTemplateColumns:
+              "minmax(1.75rem,2rem) repeat(5, minmax(2rem, 1fr))",
+            gridTemplateRows: "auto repeat(5, auto)",
+          }}
+        >
+          <div className="col-start-1 row-start-1" aria-hidden />
+
+          {DAKUTEN_HAND_ROW_LABELS.map((h, cc) => (
+            <div
+              key={h}
+              className="flex items-end justify-center pb-0.5 text-center text-[10px] font-semibold text-gray-600 sm:text-xs"
+              style={{ gridColumn: cc + 2, gridRow: 1 }}
+            >
+              {h}
+            </div>
+          ))}
+
+          {VOWEL_FIVE.map((h, vr) => (
+            <Fragment key={h}>
+              <div
+                className="flex items-center justify-end pr-1 text-[10px] font-semibold text-gray-600 sm:text-xs"
+                style={{ gridColumn: 1, gridRow: vr + 2 }}
+              >
+                {h}
+              </div>
+              {Array.from({ length: cols }, (_, cc) => {
+                const kana = cellAt(cc, vr);
+                return (
+                  <div
+                    key={`${vr}-${cc}`}
+                    className="flex min-w-0 items-center justify-center"
+                    style={{ gridColumn: cc + 2, gridRow: vr + 2 }}
+                  >
+                    {kana ? (
+                      <KanaTile
+                        row={kana}
+                        selected={selected.has(kanaKey(kana))}
+                        onToggle={() => onToggle(kanaKey(kana), kana)}
+                        layout="table"
+                      />
+                    ) : null}
+                  </div>
+                );
+              })}
+            </Fragment>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-200 bg-pink-50/40 p-2 sm:p-4">
+    <div className={wrapClass}>
       <div
         className="mx-auto grid w-full min-w-[min(100%,420px)] gap-1.5 sm:min-w-[480px] sm:gap-2"
         style={{
