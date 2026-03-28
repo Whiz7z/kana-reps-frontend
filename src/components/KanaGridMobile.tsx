@@ -210,13 +210,20 @@ export function KanaGridMobile({
       <Section
         title="Basic"
         footer={
-          <div className="border-t border-gray-100 p-3">
+          <div className="border-t border-gray-100 p-3 flex flex-col gap-2">
             <button
               type="button"
               onClick={() => onBulkLevel("basic", true)}
               className="w-full rounded-xl bg-purple-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-600 active:bg-purple-700"
             >
               Select all basic
+            </button>
+            <button
+              type="button"
+              onClick={() => onBulkLevel("basic", false)}
+              className="w-full rounded-xl bg-gray-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-600 active:bg-gray-700"
+            >
+              Clear all basic
             </button>
           </div>
         }
@@ -255,13 +262,20 @@ export function KanaGridMobile({
         <Section
           title="Dakuten"
           footer={
-            <div className="border-t border-gray-100 p-3">
+            <div className="border-t border-gray-100 p-3 flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => onBulkLevel("dakuten", true)}
                 className="w-full rounded-xl bg-purple-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-600 active:bg-purple-700"
               >
                 Select all dakuten
+              </button>
+              <button
+                type="button"
+                onClick={() => onBulkLevel("dakuten", false)}
+                className="w-full rounded-xl bg-gray-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-600 active:bg-gray-700"
+              >
+                Clear all dakuten
               </button>
             </div>
           }
@@ -299,13 +313,20 @@ export function KanaGridMobile({
         <Section
           title="Handakuten"
           footer={
-            <div className="border-t border-gray-100 p-3">
+            <div className="border-t border-gray-100 p-3 flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => onBulkLevel("handakuten", true)}
                 className="w-full rounded-xl bg-purple-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-600 active:bg-purple-700"
               >
                 Select all handakuten
+              </button>
+              <button
+                type="button"
+                onClick={() => onBulkLevel("handakuten", false)}
+                className="w-full rounded-xl bg-gray-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-600 active:bg-gray-700"
+              >
+                Clear all handakuten
               </button>
             </div>
           }
@@ -338,13 +359,20 @@ export function KanaGridMobile({
         <Section
           title="Yoon"
           footer={
-            <div className="border-t border-gray-100 p-3">
+            <div className="border-t border-gray-100 p-3 flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => onBulkLevel("yoon", true)}
                 className="w-full rounded-xl bg-purple-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-600 active:bg-purple-700"
               >
                 Select all yoon
+              </button>
+              <button
+                type="button"
+                onClick={() => onBulkLevel("yoon", false)}
+                className="w-full rounded-xl bg-gray-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-600 active:bg-gray-700"
+              >
+                Clear all yoon
               </button>
             </div>
           }

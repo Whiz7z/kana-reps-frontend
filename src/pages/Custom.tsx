@@ -309,7 +309,7 @@ export function Custom() {
               Katakana ({countKatakana})
             </button>
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 md:hidden">
             <button
               type="button"
               onClick={selectAllScript}
