@@ -68,7 +68,7 @@ export function Home() {
             <Button
               variant="outline"
               size="lg"
-              className="w-full gap-2"
+              className="w-full gap-2 flex items-center justify-center"
               onClick={() => startGoogleLogin("/menu")}
             >
               <GoogleGlyph className="h-5 w-5 shrink-0" />
