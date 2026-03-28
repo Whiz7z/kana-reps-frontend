@@ -9,78 +9,110 @@ type Props = {
 };
 
 export function RomajiToKanaMode({ row, onRoundComplete }: Props) {
-  const [input, setInput] = useState("");
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
-    setInput("");
     setRevealed(false);
   }, [row.char, row.romaji]);
+
+  const reveal = useCallback(() => {
+    setRevealed(true);
+  }, []);
+
+  const complete = useCallback(
+    (ok: boolean) => {
+      onRoundComplete({
+        prompt: row.romaji,
+        answer: row.char,
+        ok,
+      });
+    },
+    [row, onRoundComplete]
+  );
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code === "Space") {
+        if (!revealed) {
+          e.preventDefault();
+          setRevealed(true);
+        }
+        return;
+      }
+      if (!revealed) return;
+      if (e.key === "y" || e.key === "Y") {
         e.preventDefault();
-        setRevealed(true);
+        complete(true);
+      } else if (e.key === "n" || e.key === "N") {
+        e.preventDefault();
+        complete(false);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  const checkAnswer = useCallback(() => {
-    const ok = input.trim() === row.char;
-    onRoundComplete({
-      prompt: row.romaji,
-      answer: input || "(empty)",
-      ok,
-    });
-  }, [input, row, onRoundComplete]);
+  }, [revealed, complete]);
 
   return (
     <>
-      <div className="mb-6 flex min-h-[10rem] items-center justify-center rounded-xl bg-gradient-to-br from-pink-50 to-purple-50 py-6 md:py-10">
+      <div className="mb-6 flex min-h-[12rem] flex-col items-center justify-center rounded-xl bg-gradient-to-br from-pink-50 to-purple-50 py-6 md:min-h-[14rem] md:py-10">
         <div className="text-center">
-          <div>
-            <p className="text-4xl font-semibold text-purple-900">
+          <div className="inline-block rounded-2xl bg-pink-100/80 px-10 py-6 shadow-inner md:px-14 md:py-8">
+            <p className="kana-practice-script text-5xl tracking-wide text-purple-900 md:text-6xl lg:text-7xl">
               {row.romaji}
             </p>
-            {revealed && (
-              <p className="mt-2 text-5xl text-gray-800">{row.char}</p>
-            )}
           </div>
+          {revealed && (
+            <p
+              className="kana-practice-script mt-6 text-6xl text-gray-900 md:text-7xl lg:text-8xl"
+              aria-live="polite"
+            >
+              {row.char}
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="mt-6">
-        <label className="sr-only" htmlFor="answer-romaji-to-kana">
-          Answer
-        </label>
-        <input
-          id="answer-romaji-to-kana"
-          autoFocus
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              checkAnswer();
-            }
-          }}
-          placeholder="Type kana (Enter)"
-          className="w-full rounded-xl border border-purple-200 px-4 py-3 text-lg shadow-inner focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
-        />
-      </div>
-
-      <p className="mt-4 text-center text-sm text-gray-500">
-        {!revealed && "Press SPACE to reveal · "}
-        {revealed && "Answer shown · "}
-        Enter — check
-      </p>
-
-      <div className="mt-4 flex flex-wrap justify-center gap-3">
-        <Button onClick={checkAnswer}>Check</Button>
-      </div>
+      {!revealed ? (
+        <>
+          <p className="text-center text-sm text-gray-600">
+            Picture or write the kana, then reveal the answer.
+          </p>
+          <p className="mt-2 text-center text-sm text-gray-500">
+            Press <kbd className="rounded border border-purple-200 bg-white px-1.5 py-0.5 font-mono text-xs text-purple-800">Space</kbd>{" "}
+            to reveal
+          </p>
+          <div className="mt-6 flex justify-center">
+            <Button type="button" size="lg" onClick={reveal}>
+              Reveal answer
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="text-center text-sm text-gray-600">
+            Were you right?
+          </p>
+          <p className="mt-2 text-center text-sm text-gray-500">
+            <kbd className="rounded border border-purple-200 bg-white px-1.5 py-0.5 font-mono text-xs text-purple-800">Y</kbd>{" "}
+            got it ·{" "}
+            <kbd className="rounded border border-purple-200 bg-white px-1.5 py-0.5 font-mono text-xs text-purple-800">N</kbd>{" "}
+            missed
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Button type="button" size="lg" onClick={() => complete(true)}>
+              Got it
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="lg"
+              onClick={() => complete(false)}
+            >
+              Missed
+            </Button>
+          </div>
+        </>
+      )}
     </>
   );
 }

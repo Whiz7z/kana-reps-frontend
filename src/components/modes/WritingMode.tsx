@@ -129,7 +129,7 @@ export function WritingMode({
 
   return (
     <div className="flex w-full max-w-md flex-col items-center gap-4 px-2 sm:px-4">
-      <div className="text-5xl font-bold tracking-tight text-gray-800 sm:text-6xl">
+      <div className="kana-practice-script text-6xl tracking-tight text-gray-800 sm:text-7xl md:text-8xl">
         {currentQuestion?.romaji.toUpperCase()}
       </div>
 
@@ -147,12 +147,9 @@ export function WritingMode({
           />
           {showHint && currentQuestion && (
             <div
-              className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30"
+              className="kana-practice-script pointer-events-none absolute inset-0 flex items-center justify-center opacity-30"
               style={{
-                fontSize: "clamp(100px, 40vw, 200px)",
-                fontFamily:
-                  '"Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif',
-                fontWeight: 700,
+                fontSize: "clamp(120px, 42vw, 220px)",
                 color: "#444",
                 lineHeight: 1,
               }}

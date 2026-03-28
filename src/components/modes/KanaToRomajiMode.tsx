@@ -29,7 +29,9 @@ export function KanaToRomajiMode({ row, onRoundComplete }: Props) {
     <>
       <div className="mb-6 flex min-h-[10rem] items-center justify-center rounded-xl bg-gradient-to-br from-pink-50 to-purple-50 py-6 md:py-10">
         <div className="text-center">
-          <p className="text-7xl font-medium text-gray-900">{row.char}</p>
+          <p className="kana-practice-script text-8xl text-gray-900 md:text-9xl">
+            {row.char}
+          </p>
         </div>
       </div>
 
@@ -49,7 +51,7 @@ export function KanaToRomajiMode({ row, onRoundComplete }: Props) {
             }
           }}
           placeholder="Type romaji (Enter)"
-          className="w-full rounded-xl border border-purple-200 px-4 py-3 text-lg shadow-inner focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
+          className="kana-practice-script w-full rounded-xl border border-purple-200 px-4 py-4 text-2xl shadow-inner focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-300 md:text-3xl"
         />
       </div>
 

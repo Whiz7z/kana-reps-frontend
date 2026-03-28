@@ -22,9 +22,13 @@ export function QuestionHistory({ items }: { items: Entry[] }) {
           >
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 text-sm font-medium text-gray-800">
-                <span className="break-all">{e.prompt}</span>
+                <span className="kana-practice-script break-all text-base">
+                  {e.prompt}
+                </span>
                 <span className="text-gray-500"> → </span>
-                <span className="break-all">{e.answer}</span>
+                <span className="kana-practice-script break-all text-base">
+                  {e.answer}
+                </span>
               </div>
               <span
                 className={`shrink-0 text-lg ${

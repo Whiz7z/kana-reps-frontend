@@ -10,6 +10,21 @@
   }
 }
 
+@layer components {
+  /* Practice: kana + romaji — system UI stack, bold (overrides body Quicksand) */
+  .kana-practice-script {
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      sans-serif,
+      "Apple Color Emoji",
+      "Segoe UI Emoji",
+      "Segoe UI Symbol",
+      "Noto Color Emoji";
+    font-weight: 700;
+  }
+}
+
 @layer base {
   body {
     margin: 0;
