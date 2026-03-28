@@ -28,7 +28,7 @@ function GoogleGlyph({ className }: { className?: string }) {
 
 export function Home() {
   const navigate = useNavigate();
-  const { user, startGoogleLogin } = useAuth();
+  const { user, startGoogleLogin , loading} = useAuth();
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center py-10">
@@ -64,7 +64,7 @@ export function Home() {
           >
             Start practicing
           </Button>
-          {!user && (
+          {!user && !loading && (
             <Button
               variant="outline"
               size="lg"
