@@ -131,7 +131,7 @@ export function Menu() {
         <div className="flex w-full flex-wrap justify-end gap-2 sm:w-auto">
           {showSubscribe && (
             <Button
-              className="text-white"
+              className="text-white flex items-center justify-center"
               disabled={checkoutBusy}
               onClick={() => void handleSubscribe()}
             >
