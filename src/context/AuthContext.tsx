@@ -64,7 +64,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (import.meta.env.DEV) {
             console.info("[gads] Stripe checkout-session verified:", verified);
           }
-          if (verified) fireSubscriptionConversion(sid);
+          if (verified) {
+            console.log("verified", sid);
+            window.gtag_report_conversion!(undefined, sid);
+          }
           else if (import.meta.env.DEV) {
             console.warn(
               "[gads] Session not verified — no conversion (check trial/payment_status, customer match, API URL)"
