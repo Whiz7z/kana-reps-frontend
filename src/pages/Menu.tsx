@@ -109,7 +109,7 @@ export function Menu() {
 
       <div className="mb-8 flex flex-col-reverse items-start justify-between gap-4 sm:flex-row">
         <div>
-          <h1 className="mb-2 text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent" onClick={() => window.gtag_report_conversion!(undefined)}>
+          <h1 className="mb-2 text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent" onClick={() => window.gtag_report_conversion!(undefined, "menu")}>
             KanaReps
           </h1>
           <p className="text-slate-600">Non-stop kana drills</p>
