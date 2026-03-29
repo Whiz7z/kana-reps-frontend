@@ -14,7 +14,6 @@ import {
   logout as apiLogout,
   verifyCheckoutSession,
 } from "@/api/client";
-import { fireSubscriptionConversion } from "@/lib/googleAdsConversion";
 import type { MeResponse } from "@/api/types";
 
 type AuthState = {
