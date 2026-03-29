@@ -6,8 +6,9 @@
  * (must stay under the same AW- account as `gtag('config', 'AW-…')` in index.html).
  */
 
-const DEFAULT_SEND_TO = "AW-16714584801/KcIqCOTy9pEcEOGlkaI-";
-const CONVERSION_VALUE = 4.99;
+/** Must match the event snippet in `index.html` (Google Ads → conversion action). */
+const DEFAULT_SEND_TO = "AW-16714584801/PofSCM6K-JEcEOGlkaI-";
+const CONVERSION_VALUE = 1.0;
 const CONVERSION_CURRENCY = "GBP";
 
 const sendTo =

@@ -13,7 +13,7 @@
 
       gtag('config', 'AW-16714584801');
     </script>
-    <!-- Event snippet: Покупка підписки — optional redirect URL; optional transaction_id (e.g. Stripe cs_…) -->
+    <!-- Event snippet: Покупка — optional redirect URL; optional transaction_id (Stripe cs_…) -->
     <script>
       function gtag_report_conversion(url, transactionId) {
         var callback = function () {
@@ -22,8 +22,8 @@
           }
         };
         gtag("event", "conversion", {
-          send_to: "AW-16714584801/KcIqCOTy9pEcEOGlkaI-",
-          value: 4.99,
+          send_to: "AW-16714584801/PofSCM6K-JEcEOGlkaI-",
+          value: 1.0,
           currency: "GBP",
           transaction_id:
             typeof transactionId === "string" && transactionId !== ""
@@ -34,6 +34,7 @@
         return false;
       }
     </script>
+
 
   </head>
   <body>
