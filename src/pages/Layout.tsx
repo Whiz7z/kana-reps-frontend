@@ -14,7 +14,7 @@ export function Layout({ children }: { children: ReactNode }) {
             to="/"
             className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-xl font-bold tracking-tight text-transparent sm:text-2xl"
           >
-            KanaRep
+            KanaReps
           </Link>
           <nav className="flex flex-wrap items-center gap-1 text-sm font-medium text-slate-700 sm:gap-2">
             <Link
