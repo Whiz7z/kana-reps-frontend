@@ -13,6 +13,28 @@
 
       gtag('config', 'AW-16714584801');
     </script>
+    <!-- Event snippet: Покупка підписки — optional redirect URL; optional transaction_id (e.g. Stripe cs_…) -->
+    <script>
+      function gtag_report_conversion(url, transactionId) {
+        var callback = function () {
+          if (typeof url !== "undefined" && url !== null && url !== "") {
+            window.location = url;
+          }
+        };
+        gtag("event", "conversion", {
+          send_to: "AW-16714584801/KcIqCOTy9pEcEOGlkaI-",
+          value: 4.99,
+          currency: "GBP",
+          transaction_id:
+            typeof transactionId === "string" && transactionId !== ""
+              ? transactionId
+              : "",
+          event_callback: callback,
+        });
+        return false;
+      }
+    </script>
+
   </head>
   <body>
     <div id="root"></div>

@@ -2,7 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_URL: string;
-  /** Google Ads conversion `send_to`: `AW-XXXX/label` from the conversion action. */
+  /** Optional override for conversion label (default matches index.html snippet). */
   readonly VITE_GADS_SUBSCRIPTION_SEND_TO?: string;
 }
 
@@ -25,6 +25,11 @@ interface HandwritingCanvasCtor {
 interface Window {
   dataLayer?: unknown[];
   gtag?: (...args: unknown[]) => void;
+  /** Google Ads snippet in index.html — optional redirect URL, optional Stripe session id */
+  gtag_report_conversion?: (
+    url?: string | null,
+    transactionId?: string
+  ) => boolean;
   handwriting: {
     Canvas: HandwritingCanvasCtor;
     recognize: (...args: unknown[]) => void;

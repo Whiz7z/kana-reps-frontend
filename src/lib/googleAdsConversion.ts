@@ -1,40 +1,49 @@
 /**
- * Google Ads subscription conversion (gtag).
- * In Google Ads: Tools → Conversions → create “Subscribe / Purchase” → use the `send_to` value
- * (format `AW-XXXXXXXXXX/YYYYYYYYYY`).
+ * Google Ads subscription conversion — aligned with the event snippet in `index.html`
+ * (gtag base + `send_to` / value / currency).
  *
- * Set `VITE_GADS_SUBSCRIPTION_SEND_TO` in `.env` / Vercel. If unset, this is a no-op.
+ * Optional override: `VITE_GADS_SUBSCRIPTION_SEND_TO` if the conversion label changes
+ * (must stay under the same AW- account as `gtag('config', 'AW-…')` in index.html).
  */
-const SEND_TO = import.meta.env.VITE_GADS_SUBSCRIPTION_SEND_TO?.trim();
 
-let gtagBaseInitialized = false;
+const DEFAULT_SEND_TO = "AW-16714584801/KcIqCOTy9pEcEOGlkaI-";
+const CONVERSION_VALUE = 4.99;
+const CONVERSION_CURRENCY = "GBP";
 
-function ensureGtagJs(awMeasurementId: string): void {
-  if (gtagBaseInitialized) return;
-  gtagBaseInitialized = true;
+const sendTo =
+  import.meta.env.VITE_GADS_SUBSCRIPTION_SEND_TO?.trim() || DEFAULT_SEND_TO;
 
-  window.dataLayer = window.dataLayer ?? [];
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer!.push(args);
-  };
-  window.gtag("js", new Date());
-  window.gtag("config", awMeasurementId);
+function fireViaGlobalHelper(checkoutSessionId: string): boolean {
+  const helper = window.gtag_report_conversion;
+  if (typeof helper !== "function") return false;
+  // Snippet: first arg = redirect URL (omit for SPA), second = Stripe Checkout Session id
+  helper(undefined, checkoutSessionId);
+  return true;
+}
 
-  const s = document.createElement("script");
-  s.async = true;
-  s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(awMeasurementId)}`;
-  document.head.appendChild(s);
+function fireViaGtag(checkoutSessionId: string): void {
+  if (typeof window.gtag !== "function") {
+    if (import.meta.env.DEV) {
+      console.warn("[gads] window.gtag missing — check index.html gtag snippets");
+    }
+    return;
+  }
+
+  window.gtag("event", "conversion", {
+    send_to: sendTo,
+    value: CONVERSION_VALUE,
+    currency: CONVERSION_CURRENCY,
+    transaction_id: checkoutSessionId,
+  });
 }
 
 /**
  * Fire once per Checkout Session id (sessionStorage) so reloads / Strict Mode do not duplicate.
  */
 export function fireSubscriptionConversion(checkoutSessionId: string): void {
-  if (!SEND_TO?.includes("/")) {
+  if (!sendTo.includes("/")) {
     if (import.meta.env.DEV) {
-      console.warn(
-        "[gads] VITE_GADS_SUBSCRIPTION_SEND_TO missing or invalid — conversion not sent"
-      );
+      console.warn("[gads] Invalid send_to — conversion not sent");
     }
     return;
   }
@@ -46,19 +55,18 @@ export function fireSubscriptionConversion(checkoutSessionId: string): void {
     /* private mode */
   }
 
-  const awId = SEND_TO.split("/")[0]!;
-  if (!awId.startsWith("AW-")) return;
-
-  ensureGtagJs(awId);
-  window.gtag!("event", "conversion", {
-    send_to: SEND_TO,
-    transaction_id: checkoutSessionId,
-  });
+  const usedHelper = fireViaGlobalHelper(checkoutSessionId);
+  if (!usedHelper) {
+    fireViaGtag(checkoutSessionId);
+  }
 
   if (import.meta.env.DEV) {
     console.info("[gads] conversion event queued", {
-      send_to: SEND_TO,
+      send_to: sendTo,
+      value: CONVERSION_VALUE,
+      currency: CONVERSION_CURRENCY,
       transaction_id: checkoutSessionId,
+      via: usedHelper ? "gtag_report_conversion" : "gtag",
     });
   }
 
