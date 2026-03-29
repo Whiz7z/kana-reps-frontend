@@ -61,7 +61,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           const { verified } = await verifyCheckoutSession(sid);
           if (cancelled) return;
+          if (import.meta.env.DEV) {
+            console.info("[gads] Stripe checkout-session verified:", verified);
+          }
           if (verified) fireSubscriptionConversion(sid);
+          else if (import.meta.env.DEV) {
+            console.warn(
+              "[gads] Session not verified — no conversion (check trial/payment_status, customer match, API URL)"
+            );
+          }
         } catch (e) {
           console.error(e);
         } finally {

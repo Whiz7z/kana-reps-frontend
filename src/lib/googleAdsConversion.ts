@@ -30,7 +30,14 @@ function ensureGtagJs(awMeasurementId: string): void {
  * Fire once per Checkout Session id (sessionStorage) so reloads / Strict Mode do not duplicate.
  */
 export function fireSubscriptionConversion(checkoutSessionId: string): void {
-  if (!SEND_TO?.includes("/")) return;
+  if (!SEND_TO?.includes("/")) {
+    if (import.meta.env.DEV) {
+      console.warn(
+        "[gads] VITE_GADS_SUBSCRIPTION_SEND_TO missing or invalid — conversion not sent"
+      );
+    }
+    return;
+  }
 
   const storageKey = `gads_sub_conv_${checkoutSessionId}`;
   try {
@@ -47,6 +54,13 @@ export function fireSubscriptionConversion(checkoutSessionId: string): void {
     send_to: SEND_TO,
     transaction_id: checkoutSessionId,
   });
+
+  if (import.meta.env.DEV) {
+    console.info("[gads] conversion event queued", {
+      send_to: SEND_TO,
+      transaction_id: checkoutSessionId,
+    });
+  }
 
   try {
     sessionStorage.setItem(storageKey, "1");
