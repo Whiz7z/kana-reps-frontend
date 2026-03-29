@@ -79,7 +79,7 @@ function MobileKanaRow({
         <button
           type="button"
           onClick={toggleRow}
-          className="flex w-[4.25rem] shrink-0 items-center justify-center rounded-lg border border-gray-300 bg-white px-1 py-2 text-[10px] font-medium leading-tight text-gray-800 shadow-sm"
+          className="flex w-[4.25rem] shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white px-1 py-2 text-[10px] font-medium leading-tight text-slate-800 shadow-sm"
         >
           Select row
         </button>
@@ -104,8 +104,8 @@ function MobileKanaRow({
         className={cn(
           "flex w-[4.25rem] shrink-0 flex-col items-center justify-center rounded-lg border px-1 py-2 text-[10px] font-medium leading-tight shadow-sm",
           allOn
-            ? "border-purple-400 bg-purple-50 text-purple-900"
-            : "border-gray-300 bg-white text-gray-800"
+            ? "border-indigo-400 bg-indigo-50 text-indigo-900"
+            : "border-slate-200 bg-white text-slate-800"
         )}
       >
         Select row
@@ -152,10 +152,10 @@ function Section({
   return (
     <details
       open={defaultOpen}
-      className="kana-details-section overflow-hidden rounded-xl border border-gray-200 bg-white"
+      className="kana-details-section overflow-hidden rounded-2xl border border-slate-200 bg-white"
     >
-      <summary className="flex cursor-pointer list-none items-center gap-2 border-b border-gray-100 bg-gray-50/80 px-3 py-3 text-sm font-semibold text-gray-800 [&::-webkit-details-marker]:hidden">
-        <ChevronDown className="h-4 w-4 shrink-0 text-gray-500 transition-transform duration-200" />
+      <summary className="flex cursor-pointer list-none items-center gap-2 border-b border-slate-100 bg-slate-50/80 px-3 py-3 text-sm font-semibold text-slate-800 [&::-webkit-details-marker]:hidden">
+        <ChevronDown className="h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200" />
         {title}
       </summary>
       <div className="space-y-3 p-3">{children}</div>
@@ -199,7 +199,7 @@ export function KanaGridMobile({
           {VOWEL_COL_LABELS.map((v) => (
             <span
               key={v}
-              className="text-center text-[10px] font-semibold uppercase tracking-wide text-gray-500"
+              className="text-center text-[10px] font-semibold uppercase tracking-wide text-slate-500"
             >
               {v}
             </span>
@@ -210,18 +210,18 @@ export function KanaGridMobile({
       <Section
         title="Basic"
         footer={
-          <div className="border-t border-gray-100 p-3 flex flex-col gap-2">
+          <div className="border-t border-slate-100 p-3 flex flex-col gap-2">
             <button
               type="button"
               onClick={() => onBulkLevel("basic", true)}
-              className="w-full rounded-xl bg-purple-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-600 active:bg-purple-700"
+              className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 active:bg-indigo-800"
             >
               Select all basic
             </button>
             <button
               type="button"
               onClick={() => onBulkLevel("basic", false)}
-              className="w-full rounded-xl bg-gray-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-600 active:bg-gray-700"
+              className="w-full rounded-xl bg-slate-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-600 active:bg-slate-700"
             >
               Clear all basic
             </button>
@@ -262,18 +262,18 @@ export function KanaGridMobile({
         <Section
           title="Dakuten"
           footer={
-            <div className="border-t border-gray-100 p-3 flex flex-col gap-2">
+            <div className="border-t border-slate-100 p-3 flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => onBulkLevel("dakuten", true)}
-                className="w-full rounded-xl bg-purple-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-600 active:bg-purple-700"
+                className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 active:bg-indigo-800"
               >
                 Select all dakuten
               </button>
               <button
                 type="button"
                 onClick={() => onBulkLevel("dakuten", false)}
-                className="w-full rounded-xl bg-gray-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-600 active:bg-gray-700"
+                className="w-full rounded-xl bg-slate-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-600 active:bg-slate-700"
               >
                 Clear all dakuten
               </button>
@@ -286,7 +286,7 @@ export function KanaGridMobile({
               {VOWEL_COL_LABELS.map((v) => (
                 <span
                   key={v}
-                  className="text-center text-[10px] font-semibold uppercase tracking-wide text-gray-500"
+                  className="text-center text-[10px] font-semibold uppercase tracking-wide text-slate-500"
                 >
                   {v}
                 </span>
@@ -313,18 +313,18 @@ export function KanaGridMobile({
         <Section
           title="Handakuten"
           footer={
-            <div className="border-t border-gray-100 p-3 flex flex-col gap-2">
+            <div className="border-t border-slate-100 p-3 flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => onBulkLevel("handakuten", true)}
-                className="w-full rounded-xl bg-purple-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-600 active:bg-purple-700"
+                className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 active:bg-indigo-800"
               >
                 Select all handakuten
               </button>
               <button
                 type="button"
                 onClick={() => onBulkLevel("handakuten", false)}
-                className="w-full rounded-xl bg-gray-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-600 active:bg-gray-700"
+                className="w-full rounded-xl bg-slate-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-600 active:bg-slate-700"
               >
                 Clear all handakuten
               </button>
@@ -337,7 +337,7 @@ export function KanaGridMobile({
               {VOWEL_COL_LABELS.map((v) => (
                 <span
                   key={`h-${v}`}
-                  className="text-center text-[10px] font-semibold uppercase tracking-wide text-gray-500"
+                  className="text-center text-[10px] font-semibold uppercase tracking-wide text-slate-500"
                 >
                   {v}
                 </span>
@@ -359,18 +359,18 @@ export function KanaGridMobile({
         <Section
           title="Yoon"
           footer={
-            <div className="border-t border-gray-100 p-3 flex flex-col gap-2">
+            <div className="border-t border-slate-100 p-3 flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => onBulkLevel("yoon", true)}
-                className="w-full rounded-xl bg-purple-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-600 active:bg-purple-700"
+                className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 active:bg-indigo-800"
               >
                 Select all yoon
               </button>
               <button
                 type="button"
                 onClick={() => onBulkLevel("yoon", false)}
-                className="w-full rounded-xl bg-gray-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-600 active:bg-gray-700"
+                className="w-full rounded-xl bg-slate-500 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-600 active:bg-slate-700"
               >
                 Clear all yoon
               </button>
@@ -383,7 +383,7 @@ export function KanaGridMobile({
               {YOON_COL_LABELS.map((v) => (
                 <span
                   key={v}
-                  className="text-center text-[10px] font-semibold uppercase tracking-wide text-gray-500"
+                  className="text-center text-[10px] font-semibold uppercase tracking-wide text-slate-500"
                 >
                   {v}
                 </span>

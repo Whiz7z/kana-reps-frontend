@@ -1,5 +1,7 @@
 # Styling guide — matching KanaReps (legacy UI)
 
+**Current app (`kana-reps-frontend`):** Warm cream page background `#fef9f3`, **system-ui** body font, **indigo → purple → pink** brand gradients, **slate** text/borders, softer **rounded-2xl / rounded-3xl** cards and **shadow-xl shadow-slate-200/50** — aligned with [`kana-reps-landing/kana.md`](../../kana-reps-landing/kana.md). The rest of this doc still describes the older pink/purple/blue + Quicksand reference port.
+
 This document captures **visual patterns** from the Base44 app under [`kanareps/`](../../kanareps/) so you can reproduce the same look in a new React + Tailwind project. Source files are cited for copy-paste reference.
 
 ## Stack

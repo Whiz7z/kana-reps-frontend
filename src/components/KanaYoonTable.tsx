@@ -31,7 +31,7 @@ export function KanaYoonTable({
   }
 
   const wrapClass =
-    "overflow-x-auto rounded-xl border border-gray-200 bg-pink-50/40 p-2 sm:p-4";
+    "overflow-x-auto rounded-2xl border border-slate-200 bg-indigo-50/40 p-2 sm:p-4";
 
   if (isLg) {
     return (
@@ -49,7 +49,7 @@ export function KanaYoonTable({
           {YOON_ROW_LABELS.map((h, cc) => (
             <div
               key={h}
-              className="flex items-end justify-center pb-0.5 text-center text-[10px] font-semibold text-gray-600 sm:text-xs"
+              className="flex items-end justify-center pb-0.5 text-center text-[10px] font-semibold text-slate-600 sm:text-xs"
               style={{ gridColumn: cc + 2, gridRow: 1 }}
             >
               {h}
@@ -59,7 +59,7 @@ export function KanaYoonTable({
           {YOON_COL_LABELS.map((h, vr) => (
             <Fragment key={h}>
               <div
-                className="flex items-center justify-end pr-1 text-[10px] font-semibold text-gray-600 sm:text-xs"
+                className="flex items-center justify-end pr-1 text-[10px] font-semibold text-slate-600 sm:text-xs"
                 style={{ gridColumn: 1, gridRow: vr + 2 }}
               >
                 {h}
@@ -105,7 +105,7 @@ export function KanaYoonTable({
         {YOON_COL_LABELS.map((h, ci) => (
           <div
             key={h}
-            className="flex items-end justify-center pb-0.5 text-center text-[10px] font-semibold text-gray-600 sm:text-xs"
+            className="flex items-end justify-center pb-0.5 text-center text-[10px] font-semibold text-slate-600 sm:text-xs"
             style={{ gridColumn: ci + 2, gridRow: 1 }}
           >
             {h}
@@ -115,7 +115,7 @@ export function KanaYoonTable({
         {YOON_MATRIX.map((_, ri) => (
           <Fragment key={YOON_ROW_LABELS[ri]}>
             <div
-              className="flex items-center justify-end pr-1 text-[10px] font-semibold text-gray-600 sm:text-xs"
+              className="flex items-center justify-end pr-1 text-[10px] font-semibold text-slate-600 sm:text-xs"
               style={{ gridColumn: 1, gridRow: ri + 2 }}
             >
               {YOON_ROW_LABELS[ri]}

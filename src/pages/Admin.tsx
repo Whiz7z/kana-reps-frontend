@@ -12,13 +12,13 @@ function SubBadge({ status }: { status: string }) {
     trial: "bg-blue-100 text-blue-800",
     active: "bg-green-100 text-green-800",
     expired: "bg-red-100 text-red-800",
-    cancelled: "bg-gray-100 text-gray-800",
+    cancelled: "bg-slate-100 text-slate-800",
   };
   return (
     <span
       className={cn(
         "inline-flex rounded-full px-2 py-0.5 text-xs font-medium",
-        colors[status] ?? "bg-gray-100 text-gray-700"
+        colors[status] ?? "bg-slate-100 text-slate-700"
       )}
     >
       {status}
@@ -70,21 +70,21 @@ export function Admin() {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-lg border-gray-300"
+          className="shrink-0"
           aria-label="Back to menu"
           onClick={() => navigate("/menu")}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
             Admin dashboard
           </h1>
-          <p className="text-sm text-gray-600">Total users: {total}</p>
+          <p className="text-sm text-slate-600">Total users: {total}</p>
         </div>
       </div>
 
-      <div className="rounded-2xl bg-white p-4 shadow-sm sm:p-6">
+      <div className="rounded-3xl border border-slate-100/80 bg-white p-4 shadow-xl shadow-slate-200/50 sm:p-6">
         <div className="mb-6 flex flex-wrap gap-2">
           <Button
             size="sm"
@@ -116,9 +116,9 @@ export function Admin() {
           </Button>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-gray-100">
+        <div className="overflow-x-auto rounded-2xl border border-slate-100">
           <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-gray-200 bg-gradient-to-r from-pink-50/80 to-purple-50/80 text-gray-700">
+            <thead className="border-b border-slate-200 bg-gradient-to-r from-indigo-50/90 to-purple-50/80 text-slate-700">
               <tr>
                 <th className="p-3 font-semibold">Email</th>
                 <th className="p-3 font-semibold">Name</th>
@@ -131,15 +131,15 @@ export function Admin() {
               {filtered.map((u) => (
                 <tr
                   key={u.id}
-                  className="border-b border-gray-100 last:border-0 hover:bg-gray-50/80"
+                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50/80"
                 >
-                  <td className="p-3 font-medium text-gray-900">{u.email}</td>
-                  <td className="p-3 text-gray-700">{u.username ?? "—"}</td>
-                  <td className="p-3 text-gray-700">{u.role}</td>
+                  <td className="p-3 font-medium text-slate-900">{u.email}</td>
+                  <td className="p-3 text-slate-700">{u.username ?? "—"}</td>
+                  <td className="p-3 text-slate-700">{u.role}</td>
                   <td className="p-3">
                     <SubBadge status={u.subscription_status} />
                   </td>
-                  <td className="p-3 text-gray-600">
+                  <td className="p-3 text-slate-600">
                     {new Date(u.created_at).toLocaleDateString()}
                   </td>
                 </tr>

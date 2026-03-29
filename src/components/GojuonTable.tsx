@@ -19,7 +19,7 @@ type Props = {
 /** Desktop: CSS Grid with explicit placement — only kana tiles are rendered; no empty “tile” chrome. */
 export function GojuonTable({ script, rows, selected, onToggle }: Props) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-200 bg-pink-50/40 p-2 sm:p-4">
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-indigo-50/40 p-2 sm:p-4">
       <div
         className="mx-auto grid w-full min-w-[min(100%,520px)] gap-1.5 sm:min-w-[560px] sm:gap-2"
         style={{
@@ -38,7 +38,7 @@ export function GojuonTable({ script, rows, selected, onToggle }: Props) {
         {COL_HEADERS.map((h, ci) => (
           <div
             key={h}
-            className="flex items-end justify-center pb-0.5 text-center text-[10px] font-semibold text-gray-600 sm:text-xs"
+            className="flex items-end justify-center pb-0.5 text-center text-[10px] font-semibold text-slate-600 sm:text-xs"
             style={{ gridColumn: ci + 2, gridRow: 1 }}
           >
             {h}
@@ -49,7 +49,7 @@ export function GojuonTable({ script, rows, selected, onToggle }: Props) {
         {GOJUON_ROMAJI.map((gridRow, ri) => (
           <Fragment key={ROW_LABELS[ri]}>
             <div
-              className="flex items-center justify-end pr-1 text-[10px] font-semibold text-gray-600 sm:text-xs"
+              className="flex items-center justify-end pr-1 text-[10px] font-semibold text-slate-600 sm:text-xs"
               style={{ gridColumn: 1, gridRow: ri + 2 }}
             >
               {ROW_LABELS[ri]}

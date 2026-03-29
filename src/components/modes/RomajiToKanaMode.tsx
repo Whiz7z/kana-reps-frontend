@@ -54,16 +54,16 @@ export function RomajiToKanaMode({ row, onRoundComplete }: Props) {
 
   return (
     <>
-      <div className="mb-6 flex min-h-[12rem] flex-col items-center justify-center rounded-xl bg-gradient-to-br from-pink-50 to-purple-50 py-6 md:min-h-[14rem] md:py-10">
+      <div className="mb-6 flex min-h-[12rem] flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-purple-50 to-pink-50/90 py-6 md:min-h-[14rem] md:py-10">
         <div className="text-center">
-          <div className="inline-block rounded-2xl bg-pink-100/80 px-10 py-6 shadow-inner md:px-14 md:py-8">
-            <p className="kana-practice-script text-5xl tracking-wide text-purple-900 md:text-6xl lg:text-7xl">
+          <div className="inline-block rounded-2xl bg-indigo-100/70 px-10 py-6 shadow-inner md:px-14 md:py-8">
+            <p className="kana-practice-script text-5xl tracking-wide text-indigo-900 md:text-6xl lg:text-7xl">
               {row.romaji}
             </p>
           </div>
           {revealed && (
             <p
-              className="kana-practice-script mt-6 text-6xl text-gray-900 md:text-7xl lg:text-8xl"
+              className="kana-practice-script mt-6 text-6xl text-slate-900 md:text-7xl lg:text-8xl"
               aria-live="polite"
             >
               {row.char}
@@ -74,11 +74,11 @@ export function RomajiToKanaMode({ row, onRoundComplete }: Props) {
 
       {!revealed ? (
         <>
-          <p className="text-center text-sm text-gray-600">
+          <p className="text-center text-sm text-slate-600">
             Picture or write the kana, then reveal the answer.
           </p>
-          <p className="mt-2 text-center text-sm text-gray-500">
-            Press <kbd className="rounded border border-purple-200 bg-white px-1.5 py-0.5 font-mono text-xs text-purple-800">Space</kbd>{" "}
+          <p className="mt-2 text-center text-sm text-slate-500">
+            Press <kbd className="rounded border border-indigo-200 bg-white px-1.5 py-0.5 font-mono text-xs text-indigo-800">Space</kbd>{" "}
             to reveal
           </p>
           <div className="mt-6 flex justify-center">
@@ -89,13 +89,13 @@ export function RomajiToKanaMode({ row, onRoundComplete }: Props) {
         </>
       ) : (
         <>
-          <p className="text-center text-sm text-gray-600">
+          <p className="text-center text-sm text-slate-600">
             Were you right?
           </p>
-          <p className="mt-2 text-center text-sm text-gray-500">
-            <kbd className="rounded border border-purple-200 bg-white px-1.5 py-0.5 font-mono text-xs text-purple-800">Y</kbd>{" "}
+          <p className="mt-2 text-center text-sm text-slate-500">
+            <kbd className="rounded border border-indigo-200 bg-white px-1.5 py-0.5 font-mono text-xs text-indigo-800">Y</kbd>{" "}
             got it ·{" "}
-            <kbd className="rounded border border-purple-200 bg-white px-1.5 py-0.5 font-mono text-xs text-purple-800">N</kbd>{" "}
+            <kbd className="rounded border border-indigo-200 bg-white px-1.5 py-0.5 font-mono text-xs text-indigo-800">N</kbd>{" "}
             missed
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">

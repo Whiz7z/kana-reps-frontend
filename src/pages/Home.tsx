@@ -28,7 +28,7 @@ function GoogleGlyph({ className }: { className?: string }) {
 
 export function Home() {
   const navigate = useNavigate();
-  const { user, startGoogleLogin , loading} = useAuth();
+  const { user, startGoogleLogin, loading } = useAuth();
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center py-10">
@@ -50,8 +50,8 @@ export function Home() {
               aria-hidden
             />
           </button>
-          <p className="text-xl text-gray-600">Non-stop kana drills</p>
-          <p className="text-sm text-gray-500 sm:text-base">
+          <p className="text-xl text-slate-600">Non-stop kana drills</p>
+          <p className="text-sm text-slate-500 sm:text-base">
             Master Japanese Hiragana and Katakana through interactive practice
           </p>
         </div>
@@ -75,7 +75,7 @@ export function Home() {
               Sign in with Google
             </Button>
           )}
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-slate-500">
             Get 7 days free trial · No credit card required
           </p>
         </div>

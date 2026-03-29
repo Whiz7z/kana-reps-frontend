@@ -9,16 +9,16 @@ type Props = {
 export function SubscriptionModal({ open, onClose, onSubscribe }: Props) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-lg"
+        className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-6 shadow-xl shadow-slate-300/40"
       >
-        <h2 className="text-xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
+        <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
           Unlock writing mode
         </h2>
-        <p className="mt-3 text-sm text-gray-600">
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">
           Writing practice needs an active trial or subscription. Start checkout
           to continue.
         </p>

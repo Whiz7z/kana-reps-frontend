@@ -57,38 +57,38 @@ export function Practice() {
 
   if (!payload || !row) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-purple-800">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-        <p className="text-sm text-gray-600">Loading practice…</p>
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-indigo-900">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <p className="text-sm text-slate-600">Loading practice…</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="mx-auto max-w-7xl">
       <div className="mb-6 flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <Button
             variant="outline"
             size="icon"
-            className="shrink-0 rounded-lg border-gray-300"
+            className="shrink-0"
             aria-label="Back to menu"
             onClick={() => navigate("/menu")}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="min-w-0">
-            <h1 className="truncate text-xl font-bold text-gray-800 sm:text-2xl">
+            <h1 className="truncate text-xl font-bold text-slate-900 sm:text-2xl">
               {payload.setLabel}
             </h1>
-            <p className="text-sm text-gray-600">{modeLabel(mode)}</p>
+            <p className="text-sm text-slate-600">{modeLabel(mode)}</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="rounded-2xl bg-white p-3 shadow-sm sm:p-8">
+          <div className="rounded-3xl border border-slate-100/80 bg-white p-3 shadow-xl shadow-slate-200/50 sm:p-8">
             {mode === "writing" ? (
               <WritingPracticeMode
                 row={row}

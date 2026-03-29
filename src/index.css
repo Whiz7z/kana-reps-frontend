@@ -11,7 +11,7 @@
 }
 
 @layer components {
-  /* Practice: kana + romaji — system UI stack, bold (overrides body Quicksand) */
+  /* Practice: kana + romaji — system UI stack, bold */
   .kana-practice-script {
     font-family:
       ui-sans-serif,
@@ -29,16 +29,10 @@
   body {
     margin: 0;
     min-height: 100vh;
-    font-family:
-      "Quicksand",
-      "Segoe UI",
-      Tahoma,
-      Geneva,
-      Verdana,
-      sans-serif;
+    background-color: #fef9f3;
+    font-family: ui-sans-serif, system-ui, sans-serif;
   }
 
-  /* Preflight does not set pointer on <button>; raw buttons used across the app need this. */
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -49,14 +43,14 @@
   }
 }
 
-/* Home hero — animated gradient text (see STYLING.md) */
+/* Hero — indigo / purple / pink (aligned with landing kana.md) */
 .kana-hero-title {
   background: linear-gradient(
     90deg,
+    #4f46e5,
+    #9333ea,
     #ec4899,
-    #a855f7,
-    #3b82f6,
-    #ec4899
+    #4f46e5
   );
   background-size: 200% 100%;
   -webkit-background-clip: text;
@@ -76,10 +70,10 @@
 .kana-hero-title-glow {
   background: linear-gradient(
     90deg,
+    #4f46e5,
+    #9333ea,
     #ec4899,
-    #a855f7,
-    #3b82f6,
-    #ec4899
+    #4f46e5
   );
   background-size: 200% 100%;
   animation: gradient-shift 4s ease infinite;

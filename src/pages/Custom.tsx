@@ -214,25 +214,25 @@ export function Custom() {
         <Button
           variant="outline"
           size="icon"
-          className="shrink-0 rounded-lg border-gray-300"
+          className="shrink-0"
           aria-label="Back to menu"
           onClick={() => navigate("/menu")}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
             Custom set
           </h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="mt-1 text-sm text-slate-600">
             {totalSelected} kana selected ({countHiragana} Hiragana,{" "}
             {countKatakana} Katakana)
           </p>
         </div>
       </div>
 
-      <div className="mb-6 rounded-2xl bg-white p-3 shadow-sm sm:p-6">
-        <h2 className="mb-4 text-base font-semibold text-gray-700 sm:text-lg">
+      <div className="mb-6 rounded-3xl border border-slate-100/80 bg-white p-3 shadow-xl shadow-slate-200/50 sm:p-6">
+        <h2 className="mb-4 text-base font-semibold text-slate-700 sm:text-lg">
           Practice mode
         </h2>
         <div className="grid grid-cols-2 gap-4">
@@ -240,10 +240,10 @@ export function Custom() {
             type="button"
             onClick={() => setMode("kana-to-romaji")}
             className={cn(
-              "rounded-xl px-3 py-2 text-sm font-semibold transition sm:h-16 sm:text-lg",
+              "rounded-2xl px-3 py-2 text-sm font-semibold transition sm:h-16 sm:text-lg",
               mode === "kana-to-romaji"
-                ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-md"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             )}
           >
             Kana → Romaji
@@ -252,10 +252,10 @@ export function Custom() {
             type="button"
             onClick={() => setMode("romaji-to-kana")}
             className={cn(
-              "rounded-xl px-3 py-2 text-sm font-semibold transition sm:h-16 sm:text-lg",
+              "rounded-2xl px-3 py-2 text-sm font-semibold transition sm:h-16 sm:text-lg",
               mode === "romaji-to-kana"
-                ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg shadow-purple-500/20"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             )}
           >
             Romaji → Kana
@@ -268,10 +268,10 @@ export function Custom() {
               else setMode("writing");
             }}
             className={cn(
-              "col-span-2 flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition sm:h-16 sm:text-lg",
+              "col-span-2 flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-semibold transition sm:h-16 sm:text-lg",
               mode === "writing"
-                ? "bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-600 text-gray-900 shadow-md"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200",
+                ? "bg-gradient-to-r from-amber-500 to-orange-500 text-slate-900 shadow-lg shadow-amber-500/25"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200",
               !writingOk && "cursor-not-allowed opacity-50"
             )}
           >
@@ -281,17 +281,17 @@ export function Custom() {
         </div>
       </div>
 
-      <div className="mb-4 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:p-6">
+      <div className="mb-4 rounded-3xl border border-slate-200 bg-white p-3 shadow-xl shadow-slate-200/50 sm:p-6">
         <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex rounded-xl bg-gray-100 p-1">
+          <div className="flex rounded-2xl bg-slate-100 p-1">
             <button
               type="button"
               onClick={() => setTab("hiragana")}
               className={cn(
-                "flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition",
+                "flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition",
                 tab === "hiragana"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500"
               )}
             >
               Hiragana ({countHiragana})
@@ -300,10 +300,10 @@ export function Custom() {
               type="button"
               onClick={() => setTab("katakana")}
               className={cn(
-                "flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition",
+                "flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition",
                 tab === "katakana"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500"
               )}
             >
               Katakana ({countKatakana})
@@ -313,14 +313,14 @@ export function Custom() {
             <button
               type="button"
               onClick={selectAllScript}
-              className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-800 shadow-sm"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm"
             >
               Select all
             </button>
             <button
               type="button"
               onClick={clearAllScript}
-              className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-800 shadow-sm"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm"
             >
               Clear all
             </button>
@@ -339,7 +339,7 @@ export function Custom() {
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-[100] w-full border-t border-gray-200 bg-white p-3 sm:p-6">
+      <div className="fixed bottom-0 left-0 right-0 z-[100] w-full border-t border-slate-200 bg-white/95 p-3 shadow-[0_-4px_24px_rgba(15,23,42,0.06)] backdrop-blur-md sm:p-6">
         <Button
           className="w-full text-white sm:min-h-[3.5rem]"
           size="lg"

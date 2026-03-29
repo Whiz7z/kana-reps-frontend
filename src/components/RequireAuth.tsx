@@ -6,8 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 function AuthLoading() {
   return (
     <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3">
-      <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-      <p className="text-sm text-gray-600">Loading…</p>
+      <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      <p className="text-sm text-slate-600">Loading…</p>
     </div>
   );
 }

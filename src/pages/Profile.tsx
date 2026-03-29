@@ -17,13 +17,13 @@ function StatusBadge({ status }: { status: string }) {
     active: "bg-green-100 text-green-800",
     trial: "bg-blue-100 text-blue-800",
     expired: "bg-red-100 text-red-800",
-    cancelled: "bg-gray-100 text-gray-800",
+    cancelled: "bg-slate-100 text-slate-800",
   };
   return (
     <span
       className={cn(
         "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium",
-        map[status] ?? "border border-gray-200 bg-white text-gray-700"
+        map[status] ?? "border border-slate-200 bg-white text-slate-700"
       )}
     >
       {status}
@@ -87,30 +87,30 @@ export function Profile() {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-lg border-gray-300"
+          className="shrink-0"
           aria-label="Back to menu"
           onClick={() => navigate("/menu")}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
           Profile
         </h1>
       </div>
 
-      <section className="rounded-2xl bg-white p-4 shadow-sm sm:p-6">
-        <h2 className="flex items-center gap-2 text-base font-semibold text-gray-700 sm:text-lg">
-          <User className="h-5 w-5 text-purple-600" />
+      <section className="rounded-3xl border border-slate-100/80 bg-white p-4 shadow-xl shadow-slate-200/50 sm:p-6">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-slate-700 sm:text-lg">
+          <User className="h-5 w-5 text-indigo-600" />
           Account information
         </h2>
         <div className="mt-4 space-y-4">
           <div>
-            <p className="mb-2 text-sm text-gray-500">Display name</p>
+            <p className="mb-2 text-sm text-slate-500">Display name</p>
             <div className="flex flex-col gap-2 sm:flex-row">
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="min-h-11 flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                className="min-h-11 flex-1 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
               />
               <Button
                 disabled={
@@ -131,33 +131,33 @@ export function Profile() {
             </div>
           </div>
           <div>
-            <p className="mb-2 text-sm text-gray-500">Email</p>
+            <p className="mb-2 text-sm text-slate-500">Email</p>
             <input
               value={user.email}
               disabled
-              className="w-full rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 text-gray-600"
+              className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2 text-slate-600"
             />
           </div>
         </div>
       </section>
 
-      <section className="rounded-2xl bg-white p-4 shadow-sm sm:p-6">
-        <h2 className="flex items-center gap-2 text-base font-semibold text-gray-700 sm:text-lg">
-          <CreditCard className="h-5 w-5 text-purple-600" />
+      <section className="rounded-3xl border border-slate-100/80 bg-white p-4 shadow-xl shadow-slate-200/50 sm:p-6">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-slate-700 sm:text-lg">
+          <CreditCard className="h-5 w-5 text-indigo-600" />
           Subscription
         </h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-slate-500">
           Manage your subscription and billing.
         </p>
         <div className="mt-4 space-y-3">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-sm text-gray-500">Status</span>
+            <span className="text-sm text-slate-500">Status</span>
             <StatusBadge status={user.subscription_status} />
           </div>
           {user.subscription_status === "trial" && user.trial_expires_at && (
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Trial expires</span>
-              <span className="font-medium text-gray-800">
+              <span className="text-slate-500">Trial expires</span>
+              <span className="font-medium text-slate-800">
                 {new Date(user.trial_expires_at).toLocaleDateString(undefined, {
                   year: "numeric",
                   month: "long",
@@ -169,8 +169,8 @@ export function Profile() {
           {user.subscription_status === "active" &&
             user.subscription_expires_at && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">Next billing</span>
-                <span className="font-medium text-gray-800">
+                <span className="text-slate-500">Next billing</span>
+                <span className="font-medium text-slate-800">
                   {new Date(user.subscription_expires_at).toLocaleDateString()}
                 </span>
               </div>

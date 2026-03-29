@@ -27,9 +27,9 @@ export function KanaToRomajiMode({ row, onRoundComplete }: Props) {
 
   return (
     <>
-      <div className="mb-6 flex min-h-[10rem] items-center justify-center rounded-xl bg-gradient-to-br from-pink-50 to-purple-50 py-6 md:py-10">
+      <div className="mb-6 flex min-h-[10rem] items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-50 to-purple-50 py-6 md:py-10">
         <div className="text-center">
-          <p className="kana-practice-script text-8xl text-gray-900 md:text-9xl">
+          <p className="kana-practice-script text-8xl text-slate-900 md:text-9xl">
             {row.char}
           </p>
         </div>
@@ -51,11 +51,11 @@ export function KanaToRomajiMode({ row, onRoundComplete }: Props) {
             }
           }}
           placeholder="Type romaji (Enter)"
-          className="kana-practice-script w-full rounded-xl border border-purple-200 px-4 py-4 text-2xl shadow-inner focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-300 md:text-3xl"
+          className="kana-practice-script w-full rounded-2xl border border-indigo-200 px-4 py-4 text-2xl shadow-inner focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 md:text-3xl"
         />
       </div>
 
-      <p className="mt-4 text-center text-sm text-gray-500">
+      <p className="mt-4 text-center text-sm text-slate-500">
         Type romaji and press ENTER · Enter — check
       </p>
 
