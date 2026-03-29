@@ -88,6 +88,7 @@ export function Menu() {
   }
 
   async function handleSubscribe() {
+    window.gtag_report_conversion!(undefined)
     setCheckoutBusy(true);
     try {
       const { url } = await createCheckout();
