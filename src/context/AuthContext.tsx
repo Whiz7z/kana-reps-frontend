@@ -12,7 +12,9 @@ import {
   getMe,
   googleAuthUrl,
   logout as apiLogout,
+  verifyCheckoutSession,
 } from "@/api/client";
+import { fireSubscriptionConversion } from "@/lib/googleAdsConversion";
 import type { MeResponse } from "@/api/types";
 
 type AuthState = {
@@ -46,14 +48,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    let cancelled = false;
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("session_id")) {
-      void refresh();
-    }
+    void (async () => {
+      const sid = new URLSearchParams(window.location.search).get(
+        "session_id"
+      );
+      await refresh();
+      if (cancelled) return;
+
+      if (sid) {
+        try {
+          const { verified } = await verifyCheckoutSession(sid);
+          if (cancelled) return;
+          if (verified) fireSubscriptionConversion(sid);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          const path = window.location.pathname + window.location.hash;
+          window.history.replaceState({}, "", path);
+          if (!cancelled) await refresh();
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [refresh]);
 
   const startGoogleLogin = useCallback((redirectPath = "/menu") => {

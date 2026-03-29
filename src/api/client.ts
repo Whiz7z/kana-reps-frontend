@@ -83,6 +83,16 @@ export async function createCheckout(): Promise<{ url: string }> {
   return api("/api/billing/checkout", { method: "POST" });
 }
 
+/** After Stripe redirects with ?session_id=cs_… — confirms paid subscription checkout for this user. */
+export async function verifyCheckoutSession(
+  sessionId: string
+): Promise<{ verified: boolean }> {
+  const q = encodeURIComponent(sessionId);
+  return api<{ verified: boolean }>(
+    `/api/billing/checkout-session?session_id=${q}`
+  );
+}
+
 export async function createPortal(): Promise<{ url: string }> {
   return api("/api/billing/portal", { method: "POST" });
 }

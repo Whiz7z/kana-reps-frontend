@@ -2,6 +2,8 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_URL: string;
+  /** Google Ads conversion `send_to`: `AW-XXXX/label` from the conversion action. */
+  readonly VITE_GADS_SUBSCRIPTION_SEND_TO?: string;
 }
 
 interface ImportMeta {
@@ -21,6 +23,8 @@ interface HandwritingCanvasCtor {
 }
 
 interface Window {
+  dataLayer?: unknown[];
+  gtag?: (...args: unknown[]) => void;
   handwriting: {
     Canvas: HandwritingCanvasCtor;
     recognize: (...args: unknown[]) => void;
