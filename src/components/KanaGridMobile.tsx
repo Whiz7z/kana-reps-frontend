@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import type { KanaRow } from "@/api/types";
-import { KanaTile } from "@/components/KanaTile";
+import { KanaTile, type KanaGuessStatsMap } from "@/components/KanaTile";
 import { kanaKey } from "@/lib/kanaKeys";
 import {
   YOON_COL_LABELS,
@@ -20,6 +20,7 @@ type Props = {
     level: "basic" | "dakuten" | "handakuten" | "yoon",
     select: boolean
   ) => void;
+  guessStats?: KanaGuessStatsMap;
 };
 
 const DAKUTEN_ROW_LABELS = ["g", "z", "d", "b"] as const;
@@ -52,6 +53,7 @@ function MobileKanaRow({
   onToggle,
   onBulkRow,
   gridCols = 5,
+  guessStats,
 }: {
   kanaCells: (KanaRow | null)[];
   rowLabel: string;
@@ -60,6 +62,7 @@ function MobileKanaRow({
   onToggle: (key: string, row: KanaRow) => void;
   onBulkRow: (keys: string[], select: boolean) => void;
   gridCols?: 3 | 5;
+  guessStats?: KanaGuessStatsMap;
 }) {
   const keys = kanaCells
     .filter((x): x is KanaRow => x != null)
@@ -89,6 +92,7 @@ function MobileKanaRow({
             selected={selected.has(kanaKey(only))}
             onToggle={() => onToggle(kanaKey(only), only)}
             layout="mobileWide"
+            guessStats={guessStats}
           />
         </div>
       </div>
@@ -124,6 +128,7 @@ function MobileKanaRow({
               selected={selected.has(kanaKey(kana))}
               onToggle={() => onToggle(kanaKey(kana), kana)}
               layout="mobile"
+              guessStats={guessStats}
             />
           ) : gridCols === 5 ? (
             <div
@@ -171,6 +176,7 @@ export function KanaGridMobile({
   onToggle,
   onBulkRow,
   onBulkLevel,
+  guessStats,
 }: Props) {
   const scriptRows = catalog.filter((r) => r.kana_type === script);
   const basicItems = scriptRows.filter((r) => r.level === "basic");
@@ -242,6 +248,7 @@ export function KanaGridMobile({
                 onToggle={onToggle}
                 onBulkRow={onBulkRow}
                 gridCols={5}
+                guessStats={guessStats}
               />
             );
           })}
@@ -253,6 +260,7 @@ export function KanaGridMobile({
               onToggle={onToggle}
               onBulkRow={onBulkRow}
               singleFullWidth
+              guessStats={guessStats}
             />
           )}
         </div>
@@ -303,6 +311,7 @@ export function KanaGridMobile({
                 onToggle={onToggle}
                 onBulkRow={onBulkRow}
                 gridCols={5}
+                guessStats={guessStats}
               />
             ))}
           </div>
@@ -351,6 +360,7 @@ export function KanaGridMobile({
             onToggle={onToggle}
             onBulkRow={onBulkRow}
             gridCols={5}
+            guessStats={guessStats}
           />
         </Section>
       )}
@@ -400,6 +410,7 @@ export function KanaGridMobile({
                 onToggle={onToggle}
                 onBulkRow={onBulkRow}
                 gridCols={3}
+                guessStats={guessStats}
               />
             ))}
           </div>

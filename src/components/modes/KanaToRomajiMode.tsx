@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import type { KanaRow } from "@/api/types";
+import { reportKanaGuess } from "@/api/client";
 import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/context/AuthContext";
 import type { HistoryEntry } from "./types";
 import { normRomaji } from "./utils";
 
@@ -10,6 +12,7 @@ type Props = {
 };
 
 export function KanaToRomajiMode({ row, onRoundComplete }: Props) {
+  const { user } = useAuth();
   const [input, setInput] = useState("");
 
   useEffect(() => {
@@ -18,12 +21,13 @@ export function KanaToRomajiMode({ row, onRoundComplete }: Props) {
 
   const checkAnswer = useCallback(() => {
     const ok = normRomaji(input) === normRomaji(row.romaji);
+    reportKanaGuess(row, ok, Boolean(user));
     onRoundComplete({
       prompt: row.char,
       answer: input || "(empty)",
       ok,
     });
-  }, [input, row, onRoundComplete]);
+  }, [input, row, onRoundComplete, user]);
 
   return (
     <>

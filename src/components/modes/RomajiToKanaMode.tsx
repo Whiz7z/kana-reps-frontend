@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import type { KanaRow } from "@/api/types";
+import { reportKanaGuess } from "@/api/client";
 import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/context/AuthContext";
 import type { HistoryEntry } from "./types";
 
 type Props = {
@@ -9,6 +11,7 @@ type Props = {
 };
 
 export function RomajiToKanaMode({ row, onRoundComplete }: Props) {
+  const { user } = useAuth();
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
@@ -21,13 +24,14 @@ export function RomajiToKanaMode({ row, onRoundComplete }: Props) {
 
   const complete = useCallback(
     (ok: boolean) => {
+      reportKanaGuess(row, ok, Boolean(user));
       onRoundComplete({
         prompt: row.romaji,
         answer: row.char,
         ok,
       });
     },
-    [row, onRoundComplete]
+    [row, onRoundComplete, user]
   );
 
   useEffect(() => {

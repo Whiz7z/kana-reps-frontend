@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import type { KanaRow } from "@/api/types";
+import { reportKanaGuess } from "@/api/client";
+import { useAuth } from "@/context/AuthContext";
 import { WritingMode } from "./WritingMode";
 import type { HistoryEntry } from "./types";
 
@@ -14,6 +16,7 @@ export function WritingPracticeMode({
   onAppendHistory,
   onAdvance,
 }: Props) {
+  const { user } = useAuth();
   const [writingFeedback, setWritingFeedback] = useState<
     "correct" | "incorrect" | ""
   >("");
@@ -43,11 +46,13 @@ export function WritingPracticeMode({
         onResult={(recognizedChar) => {
           setRecognizing(false);
           if (!recognizedChar) {
+            reportKanaGuess(row, false, Boolean(user));
             setWritingFeedback("incorrect");
             setTimeout(() => setWritingFeedback(""), 1200);
             return;
           }
           const ok = recognizedChar === row.char;
+          reportKanaGuess(row, ok, Boolean(user));
           setWritingFeedback(ok ? "correct" : "incorrect");
           onAppendHistory({
             prompt: row.romaji,

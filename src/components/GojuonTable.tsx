@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import type { KanaRow } from "@/api/types";
-import { KanaTile } from "@/components/KanaTile";
+import { KanaTile, type KanaGuessStatsMap } from "@/components/KanaTile";
 import { kanaKey } from "@/lib/kanaKeys";
 import {
   COL_HEADERS,
@@ -14,10 +14,17 @@ type Props = {
   rows: KanaRow[];
   selected: Set<string>;
   onToggle: (key: string, row: KanaRow) => void;
+  guessStats?: KanaGuessStatsMap;
 };
 
 /** Desktop: CSS Grid with explicit placement — only kana tiles are rendered; no empty “tile” chrome. */
-export function GojuonTable({ script, rows, selected, onToggle }: Props) {
+export function GojuonTable({
+  script,
+  rows,
+  selected,
+  onToggle,
+  guessStats,
+}: Props) {
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-indigo-50/40 p-2 sm:p-4">
       <div
@@ -70,6 +77,7 @@ export function GojuonTable({ script, rows, selected, onToggle }: Props) {
                       selected={selected.has(kanaKey(kana))}
                       onToggle={() => onToggle(kanaKey(kana), kana)}
                       layout="table"
+                      guessStats={guessStats}
                     />
                   ) : null}
                 </div>

@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import type { KanaRow } from "@/api/types";
-import { KanaTile } from "@/components/KanaTile";
+import { KanaTile, type KanaGuessStatsMap } from "@/components/KanaTile";
 import { useMinWidthLg } from "@/hooks/useMinWidthLg";
 import { kanaKey } from "@/lib/kanaKeys";
 import {
@@ -13,6 +13,7 @@ type Props = {
   handakutenItems: KanaRow[];
   selected: Set<string>;
   onToggle: (key: string, row: KanaRow) => void;
+  guessStats?: KanaGuessStatsMap;
 };
 
 /** Dakuten (4×5) + handakuten (1×5) in one grid; cells by catalog order. */
@@ -21,6 +22,7 @@ export function KanaDakutenTable({
   handakutenItems,
   selected,
   onToggle,
+  guessStats,
 }: Props) {
   const isLg = useMinWidthLg();
   const rows = 5;
@@ -82,6 +84,7 @@ export function KanaDakutenTable({
                         selected={selected.has(kanaKey(kana))}
                         onToggle={() => onToggle(kanaKey(kana), kana)}
                         layout="table"
+                        guessStats={guessStats}
                       />
                     ) : null}
                   </div>
@@ -138,6 +141,7 @@ export function KanaDakutenTable({
                       selected={selected.has(kanaKey(kana))}
                       onToggle={() => onToggle(kanaKey(kana), kana)}
                       layout="table"
+                      guessStats={guessStats}
                     />
                   ) : null}
                 </div>

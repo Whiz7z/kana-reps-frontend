@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import type { KanaRow } from "@/api/types";
-import { KanaTile } from "@/components/KanaTile";
+import { KanaTile, type KanaGuessStatsMap } from "@/components/KanaTile";
 import { useMinWidthLg } from "@/hooks/useMinWidthLg";
 import { kanaKey } from "@/lib/kanaKeys";
 import {
@@ -13,6 +13,7 @@ type Props = {
   yoonItems: KanaRow[];
   selected: Set<string>;
   onToggle: (key: string, row: KanaRow) => void;
+  guessStats?: KanaGuessStatsMap;
 };
 
 /** Yoon 11×3 grid; order matches catalog. Desktop: vowels (ya/yu/yo) on rows, consonants on columns. */
@@ -20,6 +21,7 @@ export function KanaYoonTable({
   yoonItems,
   selected,
   onToggle,
+  guessStats,
 }: Props) {
   const isLg = useMinWidthLg();
   const rows = YOON_MATRIX.length;
@@ -78,6 +80,7 @@ export function KanaYoonTable({
                         selected={selected.has(kanaKey(kana))}
                         onToggle={() => onToggle(kanaKey(kana), kana)}
                         layout="table"
+                        guessStats={guessStats}
                       />
                     ) : null}
                   </div>
@@ -134,6 +137,7 @@ export function KanaYoonTable({
                       selected={selected.has(kanaKey(kana))}
                       onToggle={() => onToggle(kanaKey(kana), kana)}
                       layout="table"
+                      guessStats={guessStats}
                     />
                   ) : null}
                 </div>

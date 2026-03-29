@@ -79,6 +79,37 @@ export async function postDrill(body: Record<string, unknown>): Promise<{
   });
 }
 
+export type KanaGuessStatItem = {
+  char: string;
+  kana_type: "hiragana" | "katakana";
+  correct_count: number;
+  wrong_count: number;
+};
+
+export async function fetchKanaGuessStats(): Promise<KanaGuessStatItem[]> {
+  const r = await api<{ items: KanaGuessStatItem[] }>("/api/kana/guess-stats");
+  return r.items;
+}
+
+/** Fire-and-forget; no-op when not signed in. */
+export function reportKanaGuess(
+  row: Pick<KanaRow, "char" | "kana_type">,
+  correct: boolean,
+  authed: boolean
+): void {
+  if (!authed) return;
+  void fetch(`${base()}/api/kana/guess-stats`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      char: row.char,
+      kana_type: row.kana_type,
+      correct,
+    }),
+  }).catch(() => {});
+}
+
 export async function createCheckout(): Promise<{ url: string }> {
   return api("/api/billing/checkout", { method: "POST" });
 }

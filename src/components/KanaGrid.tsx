@@ -1,4 +1,5 @@
 import type { KanaRow } from "@/api/types";
+import type { KanaGuessStatsMap } from "@/components/KanaTile";
 import { GojuonTable } from "@/components/GojuonTable";
 import { KanaDakutenTable } from "@/components/KanaDakutenTable";
 import { KanaYoonTable } from "@/components/KanaYoonTable";
@@ -46,6 +47,7 @@ type Props = {
     level: "basic" | "dakuten" | "handakuten" | "yoon",
     select: boolean
   ) => void;
+  guessStats?: KanaGuessStatsMap;
 };
 
 export function KanaGrid({
@@ -55,6 +57,7 @@ export function KanaGrid({
   onToggle,
   onBulkRow,
   onBulkLevel,
+  guessStats,
 }: Props) {
   const rows = catalog.filter((r) => r.kana_type === script);
   const basicItems = rows.filter((r) => r.level === "basic");
@@ -72,6 +75,7 @@ export function KanaGrid({
           onToggle={onToggle}
           onBulkRow={onBulkRow}
           onBulkLevel={onBulkLevel}
+          guessStats={guessStats}
         />
       </div>
 
@@ -92,6 +96,7 @@ export function KanaGrid({
               rows={basicItems}
               selected={selected}
               onToggle={onToggle}
+              guessStats={guessStats}
             />
           </section>
         )}
@@ -112,6 +117,7 @@ export function KanaGrid({
               handakutenItems={handakutenItems}
               selected={selected}
               onToggle={onToggle}
+              guessStats={guessStats}
             />
           </section>
         )}
@@ -131,6 +137,7 @@ export function KanaGrid({
               yoonItems={yoonItems}
               selected={selected}
               onToggle={onToggle}
+              guessStats={guessStats}
             />
           </section>
         )}

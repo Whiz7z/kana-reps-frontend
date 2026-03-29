@@ -2,11 +2,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Feather } from "lucide-react";
 import type { KanaRow } from "@/api/types";
-import { ApiRequestError, fetchKanaCatalog, postDrill } from "@/api/client";
+import {
+  ApiRequestError,
+  createCheckout,
+  fetchKanaCatalog,
+  fetchKanaGuessStats,
+  postDrill,
+} from "@/api/client";
 import { KanaGrid } from "@/components/KanaGrid";
+import type { KanaGuessStatsMap } from "@/components/KanaTile";
 import { Button } from "@/components/ui/Button";
 import { SubscriptionModal } from "@/components/SubscriptionModal";
-import { createCheckout } from "@/api/client";
 import { savePracticeToSession } from "@/lib/practiceSession";
 import { useAuth } from "@/context/AuthContext";
 import { kanaKey, migrateLegacyKey } from "@/lib/kanaKeys";
@@ -56,11 +62,40 @@ export function Custom() {
   >("kana-to-romaji");
   const [subOpen, setSubOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [guessStats, setGuessStats] = useState<KanaGuessStatsMap>(
+    () => new Map()
+  );
   const migratedRef = useRef(false);
 
   useEffect(() => {
     void fetchKanaCatalog().then(setCatalog).catch(console.error);
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setGuessStats(new Map());
+      return;
+    }
+    let cancelled = false;
+    void fetchKanaGuessStats()
+      .then((items) => {
+        if (cancelled) return;
+        const m: KanaGuessStatsMap = new Map();
+        for (const it of items) {
+          m.set(`${it.char}:${it.kana_type}`, {
+            correct: it.correct_count,
+            wrong: it.wrong_count,
+          });
+        }
+        setGuessStats(m);
+      })
+      .catch(() => {
+        if (!cancelled) setGuessStats(new Map());
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   useEffect(() => {
     localStorage.setItem(KEY_TAB, tab);
@@ -335,6 +370,7 @@ export function Custom() {
             onToggle={onToggle}
             onBulkRow={onBulkRow}
             onBulkLevel={onBulkLevel}
+            guessStats={user ? guessStats : undefined}
           />
         )}
       </div>
