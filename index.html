@@ -1,45 +1,50 @@
 <!doctype html>
 <html lang="en">
-  <head>
 
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KanaReps</title>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16714584801"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      gtag('js', new Date());
+<head>
 
-      gtag('config', 'AW-16714584801');
-    </script>
-    <!-- Event snippet: Покупка — optional redirect URL; optional transaction_id (Stripe cs_…) -->
-    <script>
-      function gtag_report_conversion(url, transactionId) {
-        var callback = function () {
-          if (typeof url !== "undefined" && url !== null && url !== "") {
-            window.location = url;
-          }
-        };
-        gtag("event", "conversion", {
-          send_to: "AW-16714584801/PofSCM6K-JEcEOGlkaI-",
-          value: 1.0,
-          currency: "GBP",
-          transaction_id:
-            typeof transactionId === "string" && transactionId !== ""
-              ? transactionId
-              : "",
-          event_callback: callback,
-        });
-        return false;
-      }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KanaReps</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16714584801"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'AW-16714584801');
+  </script>
 
 
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="text/javascript" src="/handwriting.canvas.js"></script>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+  <!-- Event snippet for Stripe Subscription conversion page
+  In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+  <script>
+    function gtag_report_conversion(url) {
+      var callback = function () {
+        if (typeof (url) != 'undefined') {
+          window.location = url;
+        }
+      };
+      gtag('event', 'conversion', {
+        'send_to': 'AW-16714584801/v251CMf8-ZEcEOGlkaI-',
+        'value': 4.99,
+        'currency': 'GBP',
+        'transaction_id': '',
+        'event_callback': callback
+        // 'new_customer': true /* calculate dynamically, populate with true/false */,
+      });
+      return false;
+    }
+  </script>
+
+
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="text/javascript" src="/handwriting.canvas.js"></script>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           if (verified) {
             console.log("verified", sid);
-            window.gtag_report_conversion!(undefined, sid);
+            window.gtag_report_conversion!(undefined)
           }
           else if (import.meta.env.DEV) {
             console.warn(
