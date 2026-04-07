@@ -6,6 +6,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KanaReps</title>
+  <script>
+    (function () {
+      try {
+        var k = "kana-reps-color-mode";
+        var t = localStorage.getItem(k);
+        /* Default theme is dark; only skip when user explicitly chose light */
+        if (t !== "light") {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (e) {}
+    })();
+  </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16714584801"></script>
   <script>
     window.dataLayer = window.dataLayer || [];

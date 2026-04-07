@@ -77,14 +77,14 @@ export function Admin() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-            Admin dashboard
-          </h1>
-          <p className="text-sm text-slate-600">Total users: {total}</p>
+          <h1 className="kana-page-title text-3xl font-bold">Admin dashboard</h1>
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            Total users: {total}
+          </p>
         </div>
       </div>
 
-      <div className="rounded-3xl border border-slate-100/80 bg-white p-4 shadow-xl shadow-slate-200/50 sm:p-6">
+      <div className="rounded-3xl border border-slate-100/80 bg-[var(--color-paper)] p-4 shadow-xl shadow-slate-200/50 dark:border-white/10 dark:shadow-black/40 sm:p-6">
         <div className="mb-6 flex flex-wrap gap-2">
           <Button
             size="sm"
@@ -118,7 +118,7 @@ export function Admin() {
 
         <div className="overflow-x-auto rounded-2xl border border-slate-100">
           <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-gradient-to-r from-indigo-50/90 to-purple-50/80 text-slate-700">
+            <thead className="border-b border-slate-200 bg-violet-50/95 text-slate-700 dark:border-slate-600 dark:bg-violet-950/40 dark:text-slate-200">
               <tr>
                 <th className="p-3 font-semibold">Email</th>
                 <th className="p-3 font-semibold">Name</th>
@@ -131,11 +131,15 @@ export function Admin() {
               {filtered.map((u) => (
                 <tr
                   key={u.id}
-                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50/80"
+                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50/80 dark:border-slate-700 dark:hover:bg-white/5"
                 >
-                  <td className="p-3 font-medium text-slate-900">{u.email}</td>
-                  <td className="p-3 text-slate-700">{u.username ?? "—"}</td>
-                  <td className="p-3 text-slate-700">{u.role}</td>
+                  <td className="p-3 font-medium text-slate-900 dark:text-slate-100">
+                    {u.email}
+                  </td>
+                  <td className="p-3 text-slate-700 dark:text-slate-300">
+                    {u.username ?? "—"}
+                  </td>
+                  <td className="p-3 text-slate-700 dark:text-slate-300">{u.role}</td>
                   <td className="p-3">
                     <SubBadge status={u.subscription_status} />
                   </td>

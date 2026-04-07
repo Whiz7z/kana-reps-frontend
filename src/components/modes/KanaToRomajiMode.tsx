@@ -31,9 +31,9 @@ export function KanaToRomajiMode({ row, onRoundComplete }: Props) {
 
   return (
     <>
-      <div className="mb-6 flex min-h-[10rem] items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-50 to-purple-50 py-6 md:py-10">
+      <div className="mb-6 flex min-h-[10rem] items-center justify-center rounded-3xl bg-violet-50/90 py-6 dark:bg-violet-950/25 md:py-10">
         <div className="text-center">
-          <p className="kana-practice-script text-8xl text-slate-900 md:text-9xl">
+          <p className="kana-practice-script text-8xl text-slate-900 dark:text-slate-100 md:text-9xl">
             {row.char}
           </p>
         </div>

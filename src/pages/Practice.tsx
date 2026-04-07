@@ -57,9 +57,11 @@ export function Practice() {
 
   if (!payload || !row) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-indigo-900">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-        <p className="text-sm text-slate-600">Loading practice…</p>
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-indigo-900 dark:text-indigo-100">
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          Loading practice…
+        </p>
       </div>
     );
   }
@@ -78,17 +80,19 @@ export function Practice() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="min-w-0">
-            <h1 className="truncate text-xl font-bold text-slate-900 sm:text-2xl">
+            <h1 className="truncate text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">
               {payload.setLabel}
             </h1>
-            <p className="text-sm text-slate-600">{modeLabel(mode)}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              {modeLabel(mode)}
+            </p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="rounded-3xl border border-slate-100/80 bg-white p-3 shadow-xl shadow-slate-200/50 sm:p-8">
+          <div className="rounded-3xl border border-slate-100/80 bg-[var(--color-paper)] p-3 shadow-xl shadow-slate-200/50 dark:border-white/10 dark:shadow-black/40 sm:p-8">
             {mode === "writing" ? (
               <WritingPracticeMode
                 row={row}

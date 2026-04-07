@@ -6,23 +6,26 @@ type Size = "default" | "sm" | "icon" | "lg";
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-700 hover:to-purple-700 hover:shadow-indigo-500/40 disabled:opacity-40",
+    "bg-[var(--color-primary)] text-white shadow-lg shadow-violet-500/20 hover:bg-[var(--color-primary-hover)] disabled:opacity-40 dark:shadow-violet-900/40",
   secondary:
-    "border-2 border-indigo-100 bg-white text-indigo-900 shadow-sm hover:border-indigo-200 hover:bg-indigo-50/80 disabled:opacity-40",
+    "border-2 border-indigo-100 bg-[var(--color-paper)] text-indigo-900 shadow-sm hover:border-indigo-200 hover:bg-indigo-50/80 disabled:opacity-40 dark:border-white/15 dark:text-slate-100 dark:hover:border-white/25 dark:hover:bg-white/10",
   muted:
-    "bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-40",
+    "bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-40 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700",
   outline:
-    "border-2 border-slate-200 bg-white text-slate-800 hover:border-indigo-300 hover:bg-indigo-50/60 disabled:opacity-40",
+    "border-2 border-slate-200 bg-[var(--color-paper)] text-slate-800 hover:border-indigo-300 hover:bg-indigo-50/60 disabled:opacity-40 dark:border-slate-600 dark:text-slate-100 dark:hover:border-[var(--color-primary)] dark:hover:bg-white/5",
   ghost:
-    "bg-transparent text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 disabled:opacity-40",
+    "bg-transparent text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 disabled:opacity-40 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-[var(--color-primary)]",
 };
 
 const sizeStyles: Record<Size, string> = {
   default: "rounded-xl px-4 py-2.5 text-sm font-semibold",
   sm: "rounded-lg px-3 py-1.5 text-xs font-semibold",
-  icon: "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-slate-200 bg-white p-0 text-slate-700 hover:border-indigo-200 hover:bg-indigo-50/60",
+  icon: "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-slate-200 bg-[var(--color-paper)] p-0 text-slate-700 hover:border-indigo-200 hover:bg-indigo-50/60 dark:border-slate-600 dark:text-slate-200 dark:hover:border-[var(--color-primary)] dark:hover:bg-white/10",
   lg: "h-14 rounded-2xl px-8 text-lg font-semibold",
 };
+
+const ringOffset =
+  "focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-ring-offset)]";
 
 export function Button({
   variant = "primary",
@@ -39,7 +42,8 @@ export function Button({
     <button
       type="button"
       className={cn(
-        "cursor-pointer transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fef9f3]",
+        "cursor-pointer transition",
+        ringOffset,
         variantStyles[variant],
         sizeStyles[size],
         className

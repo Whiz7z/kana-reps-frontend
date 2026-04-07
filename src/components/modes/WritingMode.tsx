@@ -129,18 +129,18 @@ export function WritingMode({
 
   return (
     <div className="flex w-full max-w-md flex-col items-center gap-4 px-2 sm:px-4">
-      <div className="kana-practice-script text-6xl tracking-tight text-slate-800 sm:text-7xl md:text-8xl">
+      <div className="kana-practice-script text-6xl tracking-tight text-slate-800 dark:text-slate-100 sm:text-7xl md:text-8xl">
         {currentQuestion?.romaji.toUpperCase()}
       </div>
 
-      <div className="w-full rounded-3xl bg-gradient-to-br from-indigo-50 to-purple-50/90 p-4 shadow-inner sm:p-6">
+      <div className="w-full rounded-3xl bg-violet-50/90 p-4 shadow-inner dark:bg-violet-950/25 sm:p-6">
         <div className="relative mx-auto w-fit max-w-full">
           <canvas
             ref={bindCanvas}
             width={300}
             height={300}
             className={cn(
-              "touch-none rounded-2xl border border-slate-200 bg-white",
+              "touch-none rounded-2xl border border-slate-200 bg-[var(--color-paper)]",
               drawingDisabled ? "cursor-not-allowed opacity-60" : "cursor-crosshair"
             )}
             style={{ maxWidth: "100%", height: "auto" }}
@@ -160,7 +160,7 @@ export function WritingMode({
         </div>
 
         <div className="mx-auto mt-4 flex w-full max-w-xs flex-col gap-2">
-          <label className="text-center text-sm text-slate-600">
+          <label className="text-center text-sm text-slate-600 dark:text-slate-400">
             Line width: {lineWidth}px
           </label>
           <input
@@ -170,9 +170,9 @@ export function WritingMode({
             value={lineWidth}
             disabled={drawingDisabled}
             onChange={(e) => setLineWidth(Number(e.target.value))}
-            className="h-2 w-full cursor-pointer appearance-none rounded-lg accent-indigo-600 disabled:opacity-50"
+            className="h-2 w-full cursor-pointer appearance-none rounded-lg accent-[var(--color-primary)] disabled:opacity-50"
             style={{
-              background: `linear-gradient(to right, rgb(79, 70, 229) 0%, rgb(79, 70, 229) ${((lineWidth - 1) / 19) * 100}%, rgb(226, 232, 240) ${((lineWidth - 1) / 19) * 100}%, rgb(226, 232, 240) 100%)`,
+              background: `linear-gradient(to right, var(--color-primary) 0%, var(--color-primary) ${((lineWidth - 1) / 19) * 100}%, var(--color-range-track-rest) ${((lineWidth - 1) / 19) * 100}%, var(--color-range-track-rest) 100%)`,
             }}
           />
           <div className="flex justify-between text-xs text-slate-400">
@@ -183,7 +183,7 @@ export function WritingMode({
 
         <div className="mt-4 flex flex-wrap justify-center gap-2">
           <Button
-            className="min-w-[6rem] bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-700 hover:to-purple-700"
+            className="min-w-[6rem]"
             disabled={recognizing || feedback !== "" || drawingDisabled}
             onClick={handleRecognize}
           >

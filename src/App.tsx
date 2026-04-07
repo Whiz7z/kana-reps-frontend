@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { ColorModeProvider } from "@/context/ColorModeContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { RequireAdmin, RequireAuth } from "@/components/RequireAuth";
 import { Layout } from "@/pages/Layout";
@@ -11,34 +12,36 @@ import { Admin } from "@/pages/Admin";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/custom" element={<Custom />} />
-            <Route path="/practice" element={<Practice />} />
-            <Route
-              path="/profile"
-              element={
-                <RequireAuth>
-                  <Profile />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <RequireAdmin>
-                  <Admin />
-                </RequireAdmin>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Layout>
-      </AuthProvider>
-    </BrowserRouter>
+    <ColorModeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/menu" element={<Menu />} />
+              <Route path="/custom" element={<Custom />} />
+              <Route path="/practice" element={<Practice />} />
+              <Route
+                path="/profile"
+                element={
+                  <RequireAuth>
+                    <Profile />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <RequireAdmin>
+                    <Admin />
+                  </RequireAdmin>
+                }
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Layout>
+        </AuthProvider>
+      </BrowserRouter>
+    </ColorModeProvider>
   );
 }

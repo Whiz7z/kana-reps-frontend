@@ -50,8 +50,10 @@ export function Home() {
               aria-hidden
             />
           </button>
-          <p className="text-xl text-slate-600">Non-stop kana drills</p>
-          <p className="text-sm text-slate-500 sm:text-base">
+          <p className="text-xl text-slate-600 dark:text-slate-400">
+            Non-stop kana drills
+          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 sm:text-base">
             Master Japanese Hiragana and Katakana through interactive practice
           </p>
         </div>
@@ -75,7 +77,7 @@ export function Home() {
               Sign in with Google
             </Button>
           )}
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Get 7 days free trial · No credit card required
           </p>
         </div>

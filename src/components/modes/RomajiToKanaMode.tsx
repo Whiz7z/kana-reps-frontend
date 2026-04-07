@@ -58,16 +58,16 @@ export function RomajiToKanaMode({ row, onRoundComplete }: Props) {
 
   return (
     <>
-      <div className="mb-6 flex min-h-[12rem] flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-purple-50 to-pink-50/90 py-6 md:min-h-[14rem] md:py-10">
+      <div className="mb-6 flex min-h-[12rem] flex-col items-center justify-center rounded-3xl bg-fuchsia-50/80 py-6 dark:bg-fuchsia-950/25 md:min-h-[14rem] md:py-10">
         <div className="text-center">
-          <div className="inline-block rounded-2xl bg-indigo-100/70 px-10 py-6 shadow-inner md:px-14 md:py-8">
-            <p className="kana-practice-script text-5xl tracking-wide text-indigo-900 md:text-6xl lg:text-7xl">
+          <div className="inline-block rounded-2xl bg-indigo-100/70 px-10 py-6 shadow-inner dark:bg-indigo-950/40 md:px-14 md:py-8">
+            <p className="kana-practice-script text-5xl tracking-wide text-indigo-900 dark:text-indigo-100 md:text-6xl lg:text-7xl">
               {row.romaji}
             </p>
           </div>
           {revealed && (
             <p
-              className="kana-practice-script mt-6 text-6xl text-slate-900 md:text-7xl lg:text-8xl"
+              className="kana-practice-script mt-6 text-6xl text-slate-900 dark:text-slate-100 md:text-7xl lg:text-8xl"
               aria-live="polite"
             >
               {row.char}

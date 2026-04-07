@@ -13,12 +13,10 @@ export function SubscriptionModal({ open, onClose, onSubscribe }: Props) {
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-6 shadow-xl shadow-slate-300/40"
+        className="w-full max-w-md rounded-3xl border border-slate-100 bg-[var(--color-paper)] p-6 shadow-xl shadow-slate-300/40 dark:border-white/10 dark:shadow-black/50"
       >
-        <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-          Unlock writing mode
-        </h2>
-        <p className="mt-3 text-sm leading-relaxed text-slate-600">
+        <h2 className="kana-page-title text-xl font-bold">Unlock writing mode</h2>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
           Writing practice needs an active trial or subscription. Start checkout
           to continue.
         </p>

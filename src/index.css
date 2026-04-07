@@ -1,5 +1,60 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Pre-hydration / FOUC — duplicate values from src/theme/tokens.ts */
+:root {
+  --color-background: #fef9f3;
+  --color-paper: #ffffff;
+  --color-foreground: #0f172a;
+  --color-muted: #64748b;
+  --color-border: rgba(99, 102, 241, 0.2);
+  --color-primary: #6d28d9;
+  --color-primary-hover: #5b21b6;
+  --color-secondary: #db2777;
+  --color-secondary-hover: #be185d;
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
+  --color-ring: #6366f1;
+  --color-ring-offset: #fef9f3;
+  --color-range-track-rest: #e2e8f0;
+  --color-picker-cell-bg: #ffffff;
+  --color-picker-cell-text: #1e293b;
+  --color-picker-cell-text-muted: #64748b;
+  --color-picker-cell-border: #e2e8f0;
+  --color-picker-cell-hover-bg: rgba(238, 242, 255, 0.9);
+  --color-picker-cell-hover-border: #a5b4fc;
+  --color-picker-panel-bg: rgba(248, 250, 252, 0.9);
+  --color-picker-panel-border: rgba(99, 102, 241, 0.2);
+  --color-picker-row-border: rgba(99, 102, 241, 0.28);
+}
+
+.dark {
+  --color-background: #0f0f14;
+  --color-paper: #18181f;
+  --color-foreground: #f1f5f9;
+  --color-muted: #94a3b8;
+  --color-border: rgba(167, 139, 250, 0.25);
+  --color-primary: #a78bfa;
+  --color-primary-hover: #8b5cf6;
+  --color-secondary: #f472b6;
+  --color-secondary-hover: #ec4899;
+  --color-accent: #fbbf24;
+  --color-accent-hover: #f59e0b;
+  --color-ring: #a78bfa;
+  --color-ring-offset: #0f0f14;
+  --color-range-track-rest: #475569;
+  --color-picker-cell-bg: #24242f;
+  --color-picker-cell-text: #f8fafc;
+  --color-picker-cell-text-muted: #cbd5e1;
+  --color-picker-cell-border: #3e3e50;
+  --color-picker-cell-hover-bg: rgba(167, 139, 250, 0.14);
+  --color-picker-cell-hover-border: #7c7c95;
+  --color-picker-panel-bg: rgba(22, 22, 30, 0.95);
+  --color-picker-panel-border: rgba(167, 139, 250, 0.22);
+  --color-picker-row-border: rgba(167, 139, 250, 0.18);
+}
+
 @keyframes gradient-shift {
   0%,
   100% {
@@ -11,7 +66,6 @@
 }
 
 @layer components {
-  /* Practice: kana + romaji — system UI stack, bold */
   .kana-practice-script {
     font-family:
       ui-sans-serif,
@@ -23,13 +77,23 @@
       "Noto Color Emoji";
     font-weight: 700;
   }
+
+  .kana-page-title {
+    color: var(--color-primary);
+  }
+
+  .kana-watermark {
+    color: var(--color-primary);
+    opacity: 0.12;
+  }
 }
 
 @layer base {
   body {
     margin: 0;
     min-height: 100vh;
-    background-color: #fef9f3;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
     font-family: ui-sans-serif, system-ui, sans-serif;
   }
 
@@ -43,19 +107,31 @@
   }
 }
 
-/* Hero — indigo / purple / pink (aligned with landing kana.md) */
+/* Hero — optional subtle gradient text (Home) */
 .kana-hero-title {
   background: linear-gradient(
     90deg,
-    #4f46e5,
+    var(--color-primary),
     #9333ea,
-    #ec4899,
-    #4f46e5
+    var(--color-secondary),
+    var(--color-primary)
   );
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: gradient-shift 4s ease infinite;
+}
+
+.kana-hero-title-glow {
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    #9333ea,
+    var(--color-secondary),
+    var(--color-primary)
+  );
+  background-size: 200% 100%;
   animation: gradient-shift 4s ease infinite;
 }
 
@@ -65,16 +141,4 @@
 
 .kana-details-section[open] summary svg {
   transform: rotate(180deg);
-}
-
-.kana-hero-title-glow {
-  background: linear-gradient(
-    90deg,
-    #4f46e5,
-    #9333ea,
-    #ec4899,
-    #4f46e5
-  );
-  background-size: 200% 100%;
-  animation: gradient-shift 4s ease infinite;
 }
