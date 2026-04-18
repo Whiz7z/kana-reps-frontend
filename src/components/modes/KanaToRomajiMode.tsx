@@ -24,7 +24,7 @@ export function KanaToRomajiMode({ row, onRoundComplete }: Props) {
     reportKanaGuess(row, ok, Boolean(user));
     onRoundComplete({
       prompt: row.char,
-      answer: input || "(empty)",
+      answer: ok ? input.trim() || row.romaji : row.romaji,
       ok,
     });
   }, [input, row, onRoundComplete, user]);
