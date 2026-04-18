@@ -5,6 +5,7 @@ import { QuestionHistory } from "@/components/QuestionHistory";
 import { KanaToRomajiMode } from "@/components/modes/KanaToRomajiMode";
 import { RomajiToKanaMode } from "@/components/modes/RomajiToKanaMode";
 import { WritingMode } from "@/components/modes/WritingMode";
+import { WordWritingMode } from "@/components/modes/WordWritingMode";
 import type { HistoryEntry } from "@/components/modes/types";
 import { Button } from "@/components/ui/Button";
 import {
@@ -12,9 +13,9 @@ import {
   type PracticePayload,
 } from "@/lib/practiceSession";
 
-function modeLabel(m: string) {
-  if (m === "romaji-to-kana") return "Romaji → Kana";
-  if (m === "writing") return "Writing";
+function modeLabel(mode: string, isWord: boolean) {
+  if (mode === "romaji-to-kana") return "Romaji → Kana";
+  if (mode === "writing") return isWord ? "Writing (trace)" : "Writing";
   return "Kana → Romaji";
 }
 
@@ -37,6 +38,7 @@ export function Practice() {
 
   const row = payload?.kanaData[idx];
   const mode = payload?.mode ?? "kana-to-romaji";
+  const isWord = payload?.level === "word";
 
   const advance = useCallback(() => {
     if (!payload) return;
@@ -84,7 +86,7 @@ export function Practice() {
               {payload.setLabel}
             </h1>
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              {modeLabel(mode)}
+              {modeLabel(mode, isWord)}
             </p>
           </div>
         </div>
@@ -94,11 +96,19 @@ export function Practice() {
         <div className="lg:col-span-2">
           <div className="rounded-3xl border border-slate-100/80 bg-[var(--color-paper)] p-3 shadow-xl shadow-slate-200/50 dark:border-white/10 dark:shadow-black/40 sm:p-8">
             {mode === "writing" ? (
-              <WritingMode
-                row={row}
-                onAppendHistory={appendHistory}
-                onAdvance={advance}
-              />
+              isWord ? (
+                <WordWritingMode
+                  row={row}
+                  onAppendHistory={appendHistory}
+                  onAdvance={advance}
+                />
+              ) : (
+                <WritingMode
+                  row={row}
+                  onAppendHistory={appendHistory}
+                  onAdvance={advance}
+                />
+              )
             ) : mode === "romaji-to-kana" ? (
               <RomajiToKanaMode
                 row={row}
@@ -108,6 +118,7 @@ export function Practice() {
               <KanaToRomajiMode
                 row={row}
                 onRoundComplete={finishReadingRound}
+                isWord={isWord}
               />
             )}
           </div>

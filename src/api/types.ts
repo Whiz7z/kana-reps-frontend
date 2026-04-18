@@ -10,6 +10,7 @@ export type MeResponse = {
   hasAccess: boolean;
   entitlements: {
     writing: boolean;
+    word_practice: boolean;
     custom_set_unlimited: boolean;
   };
 };
@@ -19,9 +20,19 @@ export type KanaRow = {
   romaji: string;
   kana_type: "hiragana" | "katakana";
   level: string;
+  meaning?: string;
+  category?: string;
 };
 
 export type PracticeMode = "kana-to-romaji" | "romaji-to-kana" | "writing";
+
+export type PracticeLevel = "kana" | "word";
+
+export type WordCategorySummary = {
+  id: string;
+  kana_type: "hiragana" | "katakana";
+  count: number;
+};
 
 export type PracticeSession = {
   mode: PracticeMode;
@@ -29,4 +40,7 @@ export type PracticeSession = {
   setLabel: string;
   setName: string | string[] | undefined;
   customRomaji?: { romaji: string; type: string }[];
+  level?: PracticeLevel;
+  categories?: string[];
+  customWords?: { char: string }[];
 };

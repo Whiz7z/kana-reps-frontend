@@ -1,4 +1,4 @@
-import type { KanaRow, MeResponse } from "./types";
+import type { KanaRow, MeResponse, WordCategorySummary } from "./types";
 
 const base = () =>
   (import.meta.env.VITE_API_URL ?? "http://localhost:3000").replace(/\/$/, "");
@@ -104,6 +104,24 @@ export async function postDrill(body: Record<string, unknown>): Promise<{
   kanaData: KanaRow[];
 }> {
   return api("/api/drill", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function fetchWordCategories(): Promise<WordCategorySummary[]> {
+  const r = await api<{ categories: WordCategorySummary[] }>(
+    "/api/drill/words/categories"
+  );
+  return r.categories;
+}
+
+export async function postWordDrill(body: {
+  kana_type: "hiragana" | "katakana";
+  categories?: string[];
+  custom_words?: { char: string }[];
+}): Promise<{ kanaData: KanaRow[] }> {
+  return api("/api/drill/words", {
     method: "POST",
     body: JSON.stringify(body),
   });

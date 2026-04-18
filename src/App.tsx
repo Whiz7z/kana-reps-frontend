@@ -6,6 +6,7 @@ import { Layout } from "@/pages/Layout";
 import { Home } from "@/pages/Home";
 import { Menu } from "@/pages/Menu";
 import { Custom } from "@/pages/Custom";
+import { Words } from "@/pages/Words";
 import { Practice } from "@/pages/Practice";
 import { Profile } from "@/pages/Profile";
 import { Admin } from "@/pages/Admin";
@@ -20,6 +21,7 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/menu" element={<Menu />} />
               <Route path="/custom" element={<Custom />} />
+              <Route path="/words" element={<Words />} />
               <Route path="/practice" element={<Practice />} />
               <Route
                 path="/profile"

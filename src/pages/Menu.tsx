@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Feather, Grid2x2Check, Loader2 } from "lucide-react";
+import { BookText, Feather, Grid2x2Check, Loader2 } from "lucide-react";
 import { ApiRequestError, createCheckout, postDrill } from "@/api/client";
 import type { PracticeMode } from "@/api/types";
 import { useAuth } from "@/context/AuthContext";
 import { SetButton } from "@/components/SetButton";
 import { Button } from "@/components/ui/Button";
-import { SubscriptionModal } from "@/components/SubscriptionModal";
+import {
+  SubscriptionModal,
+  type SubscriptionFeature,
+} from "@/components/SubscriptionModal";
 import { savePracticeToSession } from "@/lib/practiceSession";
 import {
   cardShellClass,
@@ -29,10 +32,18 @@ export function Menu() {
   const [levelsH, setLevelsH] = useState<Set<string>>(new Set());
   const [levelsK, setLevelsK] = useState<Set<string>>(new Set());
   const [subOpen, setSubOpen] = useState(false);
+  const [subFeature, setSubFeature] =
+    useState<SubscriptionFeature>("writing");
   const [busy, setBusy] = useState(false);
   const [checkoutBusy, setCheckoutBusy] = useState(false);
 
   const writingOk = user?.entitlements.writing ?? false;
+  const wordOk = user?.entitlements.word_practice ?? false;
+
+  function openSubscribe(feature: SubscriptionFeature) {
+    setSubFeature(feature);
+    setSubOpen(true);
+  }
   const showSubscribe =
     user &&
     user.subscription_status !== "active" &&
@@ -61,7 +72,7 @@ export function Menu() {
       navigate("/practice", { state: payload });
     } catch (e) {
       if (e instanceof ApiRequestError && e.status === 403) {
-        setSubOpen(true);
+        openSubscribe("writing");
       } else {
         console.error(e);
         alert(e instanceof Error ? e.message : "Could not start drill");
@@ -104,6 +115,7 @@ export function Menu() {
     <div className="mx-auto max-w-4xl">
       <SubscriptionModal
         open={subOpen}
+        feature={subFeature}
         onClose={() => setSubOpen(false)}
         onSubscribe={handleSubscribe}
       />
@@ -184,7 +196,7 @@ export function Menu() {
             type="button"
             disabled={busy || !writingOk}
             onClick={() => {
-              if (!writingOk) setSubOpen(true);
+              if (!writingOk) openSubscribe("writing");
               else setMode("writing");
             }}
             className={cn(
@@ -201,12 +213,18 @@ export function Menu() {
         </div>
       </section>
 
-      <div className={cn("mb-4", cardShellClass)}>
+      <div className={cn("mb-4 space-y-4", cardShellClass)}>
         <SetButton
           title="Custom set"
           subtitle="Pick individual kana"
           icon={<Grid2x2Check className="h-8 w-8" />}
           onClick={() => navigate("/custom")}
+        />
+        <SetButton
+          title="Word practice"
+          subtitle="Real Japanese words by theme"
+          icon={<BookText className="h-8 w-8" />}
+          onClick={() => (wordOk ? navigate("/words") : openSubscribe("word_practice"))}
         />
       </div>
 
