@@ -9,9 +9,11 @@ import {
 } from "react";
 import {
   ApiRequestError,
+  clearGoogleOAuthPending,
   getMe,
-  googleAuthUrl,
   logout as apiLogout,
+  startGoogleAuthRedirect,
+  takeGoogleOAuthRetryHint,
   verifyCheckoutSession,
 } from "@/api/client";
 import type { MeResponse } from "@/api/types";
@@ -26,20 +28,46 @@ type AuthState = {
 
 const AuthContext = createContext<AuthState | null>(null);
 
+/** After Google redirects back, some mobile browsers attach the session cookie a tick late; one retry helps. */
+const POST_OAUTH_ME_RETRY_MS = 280;
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<MeResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
+    setLoading(true);
     try {
-      const me = await getMe();
-      setUser(me);
-    } catch (e) {
-      if (e instanceof ApiRequestError && e.status === 401) {
-        setUser(null);
-      } else {
+      try {
+        const me = await getMe();
+        setUser(me);
+        clearGoogleOAuthPending();
+        return;
+      } catch (e) {
+        if (e instanceof ApiRequestError && e.status === 401) {
+          if (takeGoogleOAuthRetryHint()) {
+            await new Promise((r) => setTimeout(r, POST_OAUTH_ME_RETRY_MS));
+            try {
+              const me = await getMe(true);
+              setUser(me);
+              clearGoogleOAuthPending();
+              return;
+            } catch (e2) {
+              if (e2 instanceof ApiRequestError && e2.status === 401) {
+                setUser(null);
+                return;
+              }
+              console.error(e2);
+              setUser(null);
+              return;
+            }
+          }
+          setUser(null);
+          return;
+        }
         console.error(e);
         setUser(null);
+        clearGoogleOAuthPending();
       }
     } finally {
       setLoading(false);
@@ -87,8 +115,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [refresh]);
 
+  // iOS Safari often serves a frozen BFCache page after OAuth; session may exist but React state is stale.
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) void refresh();
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, [refresh]);
+
   const startGoogleLogin = useCallback((redirectPath = "/menu") => {
-    window.location.href = googleAuthUrl(redirectPath);
+    startGoogleAuthRedirect(redirectPath);
   }, []);
 
   const logout = useCallback(async () => {

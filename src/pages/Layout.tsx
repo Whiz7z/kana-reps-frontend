@@ -20,7 +20,7 @@ export function Layout({ children }: { children: ReactNode }) {
             to="/"
             className="text-xl font-bold tracking-tight text-[var(--color-primary)] sm:text-2xl"
           >
-            KanaReps
+            KanaReps 
           </Link>
           <nav className="flex flex-wrap items-center gap-1 text-sm font-medium text-slate-700 dark:text-slate-200 sm:gap-2">
             <Link
