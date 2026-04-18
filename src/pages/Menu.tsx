@@ -110,10 +110,10 @@ export function Menu() {
 
       <div className="mb-8 flex flex-col-reverse items-start justify-between gap-4 sm:flex-row">
         <div>
-          <h1 className="kana-page-title mb-2 text-4xl font-bold">KanaReps</h1>
+          {/* <h1 className="kana-page-title mb-2 text-4xl font-bold">KanaReps</h1>
           <p className="text-slate-600 dark:text-slate-400">
             Non-stop kana drills
-          </p>
+          </p> */}
           {user && (
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
               {user.subscription_status === "trial" && user.trial_expires_at && (

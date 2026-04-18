@@ -27,6 +27,11 @@
   --color-picker-panel-bg: rgba(248, 250, 252, 0.9);
   --color-picker-panel-border: rgba(99, 102, 241, 0.2);
   --color-picker-row-border: rgba(99, 102, 241, 0.28);
+  --color-writing-canvas-bg: #ffffff;
+  --color-writing-canvas-border: #cbd5e1;
+  --color-writing-stroke: #0f172a;
+  --color-writing-panel-bg: rgba(237, 233, 254, 0.92);
+  --color-writing-hint: #64748b;
 }
 
 .dark {
@@ -53,6 +58,11 @@
   --color-picker-panel-bg: rgba(22, 22, 30, 0.95);
   --color-picker-panel-border: rgba(167, 139, 250, 0.22);
   --color-picker-row-border: rgba(167, 139, 250, 0.18);
+  --color-writing-canvas-bg: #25252f;
+  --color-writing-canvas-border: #4b4b5c;
+  --color-writing-stroke: #e2e8f0;
+  --color-writing-panel-bg: rgba(76, 29, 149, 0.28);
+  --color-writing-hint: #94a3b8;
 }
 
 @keyframes gradient-shift {

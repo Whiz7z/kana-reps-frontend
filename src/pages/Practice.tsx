@@ -4,7 +4,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { QuestionHistory } from "@/components/QuestionHistory";
 import { KanaToRomajiMode } from "@/components/modes/KanaToRomajiMode";
 import { RomajiToKanaMode } from "@/components/modes/RomajiToKanaMode";
-import { WritingPracticeMode } from "@/components/modes/WritingPracticeMode";
+import { WritingMode } from "@/components/modes/WritingMode";
 import type { HistoryEntry } from "@/components/modes/types";
 import { Button } from "@/components/ui/Button";
 import {
@@ -94,7 +94,7 @@ export function Practice() {
         <div className="lg:col-span-2">
           <div className="rounded-3xl border border-slate-100/80 bg-[var(--color-paper)] p-3 shadow-xl shadow-slate-200/50 dark:border-white/10 dark:shadow-black/40 sm:p-8">
             {mode === "writing" ? (
-              <WritingPracticeMode
+              <WritingMode
                 row={row}
                 onAppendHistory={appendHistory}
                 onAdvance={advance}

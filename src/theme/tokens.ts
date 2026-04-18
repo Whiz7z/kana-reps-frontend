@@ -35,6 +35,12 @@ export const themeTokens = {
     pickerPanelBg: "rgba(248, 250, 252, 0.9)",
     pickerPanelBorder: "rgba(99, 102, 241, 0.2)",
     pickerRowBorder: "rgba(99, 102, 241, 0.28)",
+    // Writing mode — canvas / ink / tool panel
+    writingCanvasBg: "#ffffff",
+    writingCanvasBorder: "#cbd5e1",
+    writingStroke: "#0f172a",
+    writingPanelBg: "rgba(237, 233, 254, 0.92)",
+    writingHint: "#64748b",
   },
   dark: {
     background: "#0f0f14",
@@ -60,6 +66,11 @@ export const themeTokens = {
     pickerPanelBg: "rgba(22, 22, 30, 0.95)",
     pickerPanelBorder: "rgba(167, 139, 250, 0.22)",
     pickerRowBorder: "rgba(167, 139, 250, 0.18)",
+    writingCanvasBg: "#25252f",
+    writingCanvasBorder: "#4b4b5c",
+    writingStroke: "#e2e8f0",
+    writingPanelBg: "rgba(76, 29, 149, 0.28)",
+    writingHint: "#94a3b8",
   },
 } as const;
 

@@ -32,6 +32,11 @@
     this.redo_trace = [];
     this.allowUndo = false;
     this.allowRedo = false;
+    /** Last painted point (logical px); midpoint smoothing in mouseMove/touchMove. */
+    this._penX = 0;
+    this._penY = 0;
+    this._rawLastX = 0;
+    this._rawLastY = 0;
     cvs.addEventListener("mousedown", this.mouseDown.bind(this));
     cvs.addEventListener("mousemove", this.mouseMove.bind(this));
     cvs.addEventListener("mouseup", this.mouseUp.bind(this));
@@ -81,6 +86,10 @@
     this.cxt.moveTo(x, y);
     this.handwritingX.push(x);
     this.handwritingY.push(y);
+    this._penX = x;
+    this._penY = y;
+    this._rawLastX = x;
+    this._rawLastY = y;
   };
 
 
@@ -89,14 +98,34 @@
       var rect = this.canvas.getBoundingClientRect();
       var x = e.clientX - rect.left;
       var y = e.clientY - rect.top;
-      this.cxt.lineTo(x, y);
+      var midX = (this._rawLastX + x) * 0.5;
+      var midY = (this._rawLastY + y) * 0.5;
+      this.cxt.beginPath();
+      this.cxt.moveTo(this._penX, this._penY);
+      this.cxt.lineTo(midX, midY);
       this.cxt.stroke();
-      this.handwritingX.push(x);
-      this.handwritingY.push(y);
+      this.handwritingX.push(midX);
+      this.handwritingY.push(midY);
+      this._penX = midX;
+      this._penY = midY;
+      this._rawLastX = x;
+      this._rawLastY = y;
     }
   };
 
   handwriting.Canvas.prototype.mouseUp = function () {
+    if (this.drawing) {
+      var tdx = this._rawLastX - this._penX;
+      var tdy = this._rawLastY - this._penY;
+      if (tdx * tdx + tdy * tdy > 0.04) {
+        this.cxt.beginPath();
+        this.cxt.moveTo(this._penX, this._penY);
+        this.cxt.lineTo(this._rawLastX, this._rawLastY);
+        this.cxt.stroke();
+        this.handwritingX.push(this._rawLastX);
+        this.handwritingY.push(this._rawLastY);
+      }
+    }
     var w = [];
     w.push(this.handwritingX);
     w.push(this.handwritingY);
@@ -117,12 +146,16 @@
     var top = box.top + window.pageYOffset - de.clientTop;
     var left = box.left + window.pageXOffset - de.clientLeft;
     var touch = e.changedTouches[0];
-    touchX = touch.pageX - left;
-    touchY = touch.pageY - top;
+    var touchX = touch.pageX - left;
+    var touchY = touch.pageY - top;
     this.handwritingX.push(touchX);
     this.handwritingY.push(touchY);
     this.cxt.beginPath();
     this.cxt.moveTo(touchX, touchY);
+    this._penX = touchX;
+    this._penY = touchY;
+    this._rawLastX = touchX;
+    this._rawLastY = touchY;
   };
 
   handwriting.Canvas.prototype.touchMove = function (e) {
@@ -134,13 +167,33 @@
     var left = box.left + window.pageXOffset - de.clientLeft;
     var x = touch.pageX - left;
     var y = touch.pageY - top;
-    this.handwritingX.push(x);
-    this.handwritingY.push(y);
-    this.cxt.lineTo(x, y);
+    var midX = (this._rawLastX + x) * 0.5;
+    var midY = (this._rawLastY + y) * 0.5;
+    this.cxt.beginPath();
+    this.cxt.moveTo(this._penX, this._penY);
+    this.cxt.lineTo(midX, midY);
     this.cxt.stroke();
+    this.handwritingX.push(midX);
+    this.handwritingY.push(midY);
+    this._penX = midX;
+    this._penY = midY;
+    this._rawLastX = x;
+    this._rawLastY = y;
   };
 
   handwriting.Canvas.prototype.touchEnd = function (e) {
+    if (this.handwritingX.length) {
+      var tdx = this._rawLastX - this._penX;
+      var tdy = this._rawLastY - this._penY;
+      if (tdx * tdx + tdy * tdy > 0.04) {
+        this.cxt.beginPath();
+        this.cxt.moveTo(this._penX, this._penY);
+        this.cxt.lineTo(this._rawLastX, this._rawLastY);
+        this.cxt.stroke();
+        this.handwritingX.push(this._rawLastX);
+        this.handwritingY.push(this._rawLastY);
+      }
+    }
     var w = [];
     w.push(this.handwritingX);
     w.push(this.handwritingY);
@@ -155,7 +208,10 @@
       if (this.allowRedo) {
         this.redo_step.push(this.step.pop());
         this.redo_trace.push(this.trace.pop());
-        this.cxt.clearRect(0, 0, this.width, this.height);
+        this.cxt.save();
+        this.cxt.setTransform(1, 0, 0, 1, 0, 0);
+        this.cxt.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.cxt.restore();
       }
     } else {
       if (this.allowRedo) {
@@ -177,7 +233,10 @@
   };
 
   handwriting.Canvas.prototype.erase = function () {
-    this.cxt.clearRect(0, 0, this.width, this.height);
+    this.cxt.save();
+    this.cxt.setTransform(1, 0, 0, 1, 0, 0);
+    this.cxt.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.cxt.restore();
     this.step = [];
     this.redo_step = [];
     this.redo_trace = [];

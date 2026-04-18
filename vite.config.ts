@@ -10,5 +10,7 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    /** Listen on LAN (0.0.0.0) so e.g. http://<this-pc-ip>:5173 works from phone on same Wi-Fi. */
+    host: true,
   },
 });
