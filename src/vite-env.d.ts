@@ -2,6 +2,8 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_URL: string;
+  /** Google OAuth 2.0 Web client ID (used by @react-oauth/google auth-code flow). */
+  readonly VITE_GOOGLE_CLIENT_ID: string;
   /** Optional override for conversion label (default matches index.html snippet). */
   readonly VITE_GADS_SUBSCRIPTION_SEND_TO?: string;
 }

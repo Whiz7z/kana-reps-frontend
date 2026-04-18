@@ -3,6 +3,32 @@ import type { KanaRow, MeResponse } from "./types";
 const base = () =>
   (import.meta.env.VITE_API_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
+const AUTH_TOKEN_KEY = "kanareps-auth-token";
+
+export function getAuthToken(): string | null {
+  try {
+    return localStorage.getItem(AUTH_TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setAuthToken(token: string): void {
+  try {
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+  } catch {
+    /* quota / private mode */
+  }
+}
+
+export function clearAuthToken(): void {
+  try {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+  } catch {
+    /* noop */
+  }
+}
+
 export class ApiRequestError extends Error {
   constructor(
     message: string,
@@ -15,15 +41,19 @@ export class ApiRequestError extends Error {
 }
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getAuthToken();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...((init?.headers as Record<string, string> | undefined) ?? {}),
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
   const res = await fetch(`${base()}${path}`, {
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
     ...init,
+    headers,
   });
   if (!res.ok) {
+    if (res.status === 401) clearAuthToken();
     const body = await res.json().catch(() => ({}));
     const msg =
       typeof body === "object" &&
@@ -39,51 +69,10 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-const GOOGLE_OAUTH_MARK_KEY = "kanareps-google-oauth-mark";
-
-/** Call right before navigating to Google so the next page load can retry /api/me once (mobile cookie timing). */
-export function markGoogleOAuthPending(): void {
-  try {
-    sessionStorage.setItem(GOOGLE_OAUTH_MARK_KEY, String(Date.now()));
-  } catch {
-    /* private mode / quota */
-  }
-}
-
-export function clearGoogleOAuthPending(): void {
-  try {
-    sessionStorage.removeItem(GOOGLE_OAUTH_MARK_KEY);
-  } catch {
-    /* noop */
-  }
-}
-
-/**
- * If the user just started Google sign-in (recent mark), removes the mark and returns true
- * so the app can retry /api/me once after a short delay (Safari / mobile post-redirect race).
- */
-export function takeGoogleOAuthRetryHint(maxAgeMs = 120_000): boolean {
-  try {
-    const raw = sessionStorage.getItem(GOOGLE_OAUTH_MARK_KEY);
-    if (!raw) return false;
-    const t = Number(raw);
-    sessionStorage.removeItem(GOOGLE_OAUTH_MARK_KEY);
-    if (!Number.isFinite(t)) return false;
-    if (Date.now() - t > maxAgeMs) return false;
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 /** Coalesce concurrent /me calls (e.g. React StrictMode double-mount). Clears after settle so later refresh() still fetches. */
 let getMeInFlight: Promise<MeResponse> | null = null;
 
-/** @param force - bypass in-flight dedupe (use after a deliberate post-OAuth retry). */
-export async function getMe(force = false): Promise<MeResponse> {
-  if (force) {
-    return api<MeResponse>("/api/me");
-  }
+export async function getMe(): Promise<MeResponse> {
   if (!getMeInFlight) {
     getMeInFlight = api<MeResponse>("/api/me").finally(() => {
       getMeInFlight = null;
@@ -93,7 +82,7 @@ export async function getMe(force = false): Promise<MeResponse> {
 }
 
 export async function logout(): Promise<void> {
-  await api<{ ok: boolean }>("/api/auth/logout", { method: "POST" });
+  clearAuthToken();
 }
 
 /** Shared so Strict Mode / duplicate mounts only hit the network once per session. */
@@ -139,10 +128,14 @@ export function reportKanaGuess(
   authed: boolean
 ): void {
   if (!authed) return;
+  const token = getAuthToken();
+  if (!token) return;
   void fetch(`${base()}/api/kana/guess-stats`, {
     method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({
       char: row.char,
       kana_type: row.kana_type,
@@ -169,14 +162,17 @@ export async function createPortal(): Promise<{ url: string }> {
   return api("/api/billing/portal", { method: "POST" });
 }
 
-export function googleAuthUrl(redirectPath: string): string {
-  const q = encodeURIComponent(redirectPath);
-  return `${base()}/api/auth/google?redirect=${q}`;
-}
-
-export function startGoogleAuthRedirect(redirectPath = "/menu"): void {
-  markGoogleOAuthPending();
-  window.location.href = googleAuthUrl(redirectPath);
+/**
+ * Exchange the Google auth-code from the popup flow (@react-oauth/google)
+ * for an app JWT and user payload. Client must call `setAuthToken` with the result.
+ */
+export async function exchangeGoogleAuthCode(
+  code: string
+): Promise<{ token: string; user: MeResponse }> {
+  return api<{ token: string; user: MeResponse }>("/api/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ code }),
+  });
 }
 
 export async function updateUsername(name: string): Promise<MeResponse> {
