@@ -116,7 +116,7 @@ function KanaPickerRowInner({
               key={`${rowId}-${kanaKey(cell)}`}
               row={cell}
               selected={selected.has(kanaKey(cell))}
-              onToggle={() => onToggle(kanaKey(cell), cell)}
+              onToggle={onToggle}
               guessStats={guessStats}
             />
           ) : (

@@ -105,6 +105,7 @@ export function Custom() {
     migratedRef.current = true;
     setSelected((prev) => {
       const next = new Set<string>();
+      let changed = false;
       for (const key of prev) {
         if (catalog.some((r) => kanaKey(r) === key)) {
           next.add(key);
@@ -112,25 +113,42 @@ export function Custom() {
         }
         const m = migrateLegacyKey(key, catalog);
         if (m) next.add(m);
+        changed = true;
       }
-      const a = [...next].sort().join("\0");
-      const b = [...prev].sort().join("\0");
-      if (a !== b) {
-        persistFromMerged(next);
-        return next;
-      }
-      return prev;
+      if (!changed && next.size === prev.size) return prev;
+      return next;
     });
   }, [catalog]);
 
-  const countHiragana = useMemo(
-    () => [...selected].filter((k) => k.endsWith(":hiragana")).length,
-    [selected]
-  );
-  const countKatakana = useMemo(
-    () => [...selected].filter((k) => k.endsWith(":katakana")).length,
-    [selected]
-  );
+  // Persist selection to localStorage whenever it changes. Kept out of the
+  // state-updater functions so React Strict Mode's double-invocation doesn't
+  // trigger duplicate writes, and so updaters stay pure.
+  const persistedOnceRef = useRef(false);
+  useEffect(() => {
+    if (!persistedOnceRef.current) {
+      persistedOnceRef.current = true;
+      return;
+    }
+    persistFromMerged(selected);
+  }, [selected]);
+
+  // One pass over the catalog + selection produces everything we need:
+  // per-script counts and the custom-romaji payload used to start practice.
+  const { countHiragana, countKatakana, customRomaji } = useMemo(() => {
+    let h = 0;
+    let k = 0;
+    const seen = new Set<string>();
+    const romaji: { romaji: string; type: string }[] = [];
+    for (const row of catalog) {
+      const key = kanaKey(row);
+      if (!selected.has(key) || seen.has(key)) continue;
+      seen.add(key);
+      if (row.kana_type === "hiragana") h++;
+      else if (row.kana_type === "katakana") k++;
+      romaji.push({ romaji: row.romaji, type: row.kana_type });
+    }
+    return { countHiragana: h, countKatakana: k, customRomaji: romaji };
+  }, [catalog, selected]);
   const totalSelected = countHiragana + countKatakana;
 
   const onToggle = useCallback((key: string, _row: KanaRow) => {
@@ -138,7 +156,6 @@ export function Custom() {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
       else next.add(key);
-      persistFromMerged(next);
       return next;
     });
   }, []);
@@ -150,7 +167,6 @@ export function Custom() {
         if (select) next.add(k);
         else next.delete(k);
       }
-      persistFromMerged(next);
       return next;
     });
   }, []);
@@ -162,17 +178,6 @@ export function Custom() {
   const clearAllKana = useCallback(() => {
     onBulkRow(catalog.map(kanaKey), false);
   }, [catalog, onBulkRow]);
-
-  const customRomaji = useMemo(() => {
-    const map = new Map<string, { romaji: string; type: string }>();
-    for (const row of catalog) {
-      const k = kanaKey(row);
-      if (selected.has(k)) {
-        map.set(k, { romaji: row.romaji, type: row.kana_type });
-      }
-    }
-    return [...map.values()];
-  }, [catalog, selected]);
 
   async function start() {
     if (customRomaji.length === 0) return;

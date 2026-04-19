@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import type { CSSProperties } from "react";
 import type { KanaRow } from "@/api/types";
 import type { KanaGuessStatsMap } from "@/types/kanaGuessStats";
@@ -8,7 +8,11 @@ import { cn } from "@/lib/utils";
 type Props = {
   row: KanaRow;
   selected: boolean;
-  onToggle: () => void;
+  /**
+   * Stable across renders; the cell calls it with its own (key, row) so the
+   * parent doesn't have to allocate a fresh closure per cell per render.
+   */
+  onToggle: (key: string, row: KanaRow) => void;
   guessStats?: KanaGuessStatsMap;
 };
 
@@ -18,7 +22,11 @@ type Props = {
  * cell shows a 2px accuracy bar and a single "% / counts" glanceable token
  * that swaps between percentage and raw ✓/✗ counts on hover.
  */
-export function KanaPickerCell({ row, selected, onToggle, guessStats }: Props) {
+function KanaPickerCellInner({ row, selected, onToggle, guessStats }: Props) {
+  const handleClick = useCallback(() => {
+    onToggle(kanaKey(row), row);
+  }, [onToggle, row]);
+
   const st = guessStats?.get(kanaKey(row));
   const total = st ? st.correct + st.wrong : 0;
   const hasStats = total > 0 && !!st;
@@ -43,7 +51,7 @@ export function KanaPickerCell({ row, selected, onToggle, guessStats }: Props) {
     <div className="flex min-w-0 flex-1 flex-col items-stretch gap-1">
       <button
         type="button"
-        onClick={onToggle}
+        onClick={handleClick}
         aria-pressed={selected}
         className={cn(
           "practice-ui flex min-h-10 min-w-0 flex-col items-center justify-center px-0.5 py-1 text-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) sm:min-h-11",
@@ -137,3 +145,11 @@ export function KanaPickerCell({ row, selected, onToggle, guessStats }: Props) {
     </div>
   );
 }
+
+/**
+ * Memo uses shallow equality on primitive props (`selected`) and on the stable
+ * identities of `row`, `onToggle`, and `guessStats`. Because the row is only
+ * re-rendered when the selection inside its cells changes, unaffected cells
+ * within the same row still bail out here.
+ */
+export const KanaPickerCell = memo(KanaPickerCellInner);

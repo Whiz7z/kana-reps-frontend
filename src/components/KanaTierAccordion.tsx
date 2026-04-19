@@ -7,12 +7,17 @@ type Props = {
   tierKeys: string[];
   selected: Set<string>;
   onBulkRow: (keys: string[], select: boolean) => void;
-  /** Passed so memo can rerender when stats refresh; not read in the shell UI */
+  /**
+   * Not rendered by the shell. Tracked only so that when the caller's
+   * guessStats reference changes (stats finished loading, refreshed, etc.)
+   * this memo invalidates and lets its children re-render with fresh stats.
+   */
   guessStats?: KanaGuessStatsMap;
   children: React.ReactNode;
 };
 
 function tierKeysEqual(a: string[], b: string[]): boolean {
+  if (a === b) return true;
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i++) {
     if (a[i] !== b[i]) return false;
@@ -25,6 +30,7 @@ function tierSelectionUnchanged(
   prev: Set<string>,
   next: Set<string>
 ): boolean {
+  if (prev === next) return true;
   for (const k of tierKeys) {
     if (prev.has(k) !== next.has(k)) return false;
   }
@@ -40,9 +46,7 @@ function tierAccordionPropsEqual(
   if (prev.onBulkRow !== next.onBulkRow) return false;
   if (prev.guessStats !== next.guessStats) return false;
   if (!tierKeysEqual(prev.tierKeys, next.tierKeys)) return false;
-  if (
-    !tierSelectionUnchanged(next.tierKeys, prev.selected, next.selected)
-  ) {
+  if (!tierSelectionUnchanged(next.tierKeys, prev.selected, next.selected)) {
     return false;
   }
   return true;
@@ -147,8 +151,8 @@ function KanaTierAccordionInner({
 }
 
 /**
- * Only re-renders when this tier's keys change in `selected`, or `guessStats`
- * ref changes. Other accordions / scripts can update without redrawing this one.
+ * Only re-renders when this tier's keys or their selection state change.
+ * `children` identity is also compared so internal row updates can propagate.
  */
 export const KanaTierAccordion = memo(
   KanaTierAccordionInner,

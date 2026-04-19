@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import type { KanaRow } from "@/api/types";
 import type { KanaGuessStatsMap } from "@/types/kanaGuessStats";
 import { KanaPickerRow } from "@/components/KanaPickerRow";
@@ -11,6 +12,12 @@ import {
   YOON_ROW_LABELS,
 } from "@/lib/extraKanaLayout";
 
+// Layout is a pure, argument-free derivation of compile-time data; compute it
+// once at module load instead of on every ScriptColumn render.
+const GOJUON_ROWS = consonantRowsFromGojuon();
+const N_ROW_DEF = GOJUON_ROWS.find((r) => r.label === "ん");
+const MAIN_ROW_DEFS = GOJUON_ROWS.filter((r) => r.label !== "ん");
+
 type Props = {
   script: "hiragana" | "katakana";
   catalog: KanaRow[];
@@ -19,23 +26,6 @@ type Props = {
   onBulkRow: (keys: string[], select: boolean) => void;
   guessStats?: KanaGuessStatsMap;
 };
-
-function keysForDesktopSection(
-  catalog: KanaRow[],
-  script: "hiragana" | "katakana",
-  section: "basic" | "dakuten" | "yoon"
-): string[] {
-  const rows = catalog.filter((r) => r.kana_type === script);
-  if (section === "basic") {
-    return rows.filter((r) => r.level === "basic").map(kanaKey);
-  }
-  if (section === "yoon") {
-    return rows.filter((r) => r.level === "yoon").map(kanaKey);
-  }
-  return rows
-    .filter((r) => r.level === "dakuten" || r.level === "handakuten")
-    .map(kanaKey);
-}
 
 function dakutenCellAt(
   dakutenItems: KanaRow[],
@@ -53,39 +43,111 @@ function displayRowLabel(raw: string): string {
   return raw;
 }
 
-function ScriptColumn({
-  script,
-  catalog,
-  selected,
-  onToggle,
-  onBulkRow,
-  guessStats,
-}: {
+type ScriptColumnProps = {
   script: "hiragana" | "katakana";
   catalog: KanaRow[];
   selected: Set<string>;
   onToggle: (key: string, row: KanaRow) => void;
   onBulkRow: (keys: string[], select: boolean) => void;
   guessStats?: KanaGuessStatsMap;
-}) {
-  const rows = catalog.filter((r) => r.kana_type === script);
-  const basicItems = rows.filter((r) => r.level === "basic");
-  const dakutenItems = rows.filter((r) => r.level === "dakuten");
-  const handakutenItems = rows.filter((r) => r.level === "handakuten");
-  const yoonItems = rows.filter((r) => r.level === "yoon");
+};
 
-  const gojuonRows = consonantRowsFromGojuon();
-  const nRowDef = gojuonRows.find((r) => r.label === "ん");
-  const mainRowDefs = gojuonRows.filter((r) => r.label !== "ん");
+function selectionWithinKeysEqual(
+  keys: string[],
+  a: Set<string>,
+  b: Set<string>
+): boolean {
+  if (a === b) return true;
+  for (const k of keys) {
+    if (a.has(k) !== b.has(k)) return false;
+  }
+  return true;
+}
 
-  const tierBasicKeys = keysForDesktopSection(catalog, script, "basic");
-  const tierDakKeys = keysForDesktopSection(catalog, script, "dakuten");
-  const tierYoonKeys = keysForDesktopSection(catalog, script, "yoon");
+function ScriptColumnInner({
+  script,
+  catalog,
+  selected,
+  onToggle,
+  onBulkRow,
+  guessStats,
+}: ScriptColumnProps) {
+  // Split the catalog by script + level exactly once per (catalog, script)
+  // rather than on every selection toggle.
+  const { basicItems, dakutenItems, handakutenItems, yoonItems } = useMemo(() => {
+    const rows = catalog.filter((r) => r.kana_type === script);
+    return {
+      basicItems: rows.filter((r) => r.level === "basic"),
+      dakutenItems: rows.filter((r) => r.level === "dakuten"),
+      handakutenItems: rows.filter((r) => r.level === "handakuten"),
+      yoonItems: rows.filter((r) => r.level === "yoon"),
+    };
+  }, [catalog, script]);
+
+  const tierBasicKeys = useMemo(
+    () => basicItems.map(kanaKey),
+    [basicItems]
+  );
+  const tierDakKeys = useMemo(
+    () => [...dakutenItems, ...handakutenItems].map(kanaKey),
+    [dakutenItems, handakutenItems]
+  );
+  const tierYoonKeys = useMemo(() => yoonItems.map(kanaKey), [yoonItems]);
+
+  // Pre-build the cell matrices for each tier so rerenders don't re-allocate
+  // these arrays on every selection change.
+  const basicRows = useMemo(() => {
+    const main = MAIN_ROW_DEFS.map((def) => ({
+      key: def.label,
+      rowId: `basic-${script}-${def.label}`,
+      rowLabel: displayRowLabel(def.label),
+      cells: def.cells.map((rk) =>
+        rk ? (cellKana(basicItems, script, rk) ?? null) : null
+      ) as (KanaRow | null)[],
+    }));
+    const nRow = N_ROW_DEF
+      ? {
+          key: "n",
+          rowId: `basic-${script}-n`,
+          rowLabel: "ん",
+          cells: N_ROW_DEF.cells.map((rk) =>
+            rk ? (cellKana(basicItems, script, rk) ?? null) : null
+          ) as (KanaRow | null)[],
+        }
+      : null;
+    return { main, nRow };
+  }, [basicItems, script]);
+
+  const dakutenRows = useMemo(() => {
+    return Array.from({ length: 5 }, (_, ri) => ({
+      key: `dak-${script}-${ri}`,
+      rowId: `dakuten-${script}-${ri}`,
+      rowLabel: DAKUTEN_HAND_ROW_LABELS[ri] ?? "",
+      cells: Array.from(
+        { length: 5 },
+        (_, ci) =>
+          dakutenCellAt(dakutenItems, handakutenItems, ri, ci) ?? null
+      ) as (KanaRow | null)[],
+    }));
+  }, [dakutenItems, handakutenItems, script]);
+
+  const yoonRows = useMemo(() => {
+    return YOON_MATRIX.map((_, ri) => {
+      const label = YOON_ROW_LABELS[ri] ?? `y-${ri}`;
+      return {
+        key: `yoon-${script}-${label}`,
+        rowId: `yoon-${script}-${label}`,
+        rowLabel: label,
+        cells: [0, 1, 2].map((ci) => yoonItems[ri * 3 + ci] ?? null) as (
+          | KanaRow
+          | null
+        )[],
+      };
+    });
+  }, [yoonItems, script]);
 
   return (
-    <div
-      className="flex min-w-0 flex-col gap-2"
-    >
+    <div className="flex min-w-0 flex-col gap-2">
       <h3
         className="practice-kana truncate text-base font-semibold sm:text-lg"
         style={{ color: "var(--practice-text)" }}
@@ -102,31 +164,24 @@ function ScriptColumn({
           guessStats={guessStats}
         >
           <div className="min-w-0 overflow-x-hidden">
-            {mainRowDefs.map((def) => {
-              const cells: (KanaRow | null)[] = def.cells.map((rk) =>
-                rk ? (cellKana(basicItems, script, rk) ?? null) : null
-              );
-              return (
-                <KanaPickerRow
-                  key={def.label}
-                  rowId={`basic-${script}-${def.label}`}
-                  rowLabel={displayRowLabel(def.label)}
-                  cells={cells}
-                  cols={5}
-                  selected={selected}
-                  onToggle={onToggle}
-                  onBulkRow={onBulkRow}
-                  guessStats={guessStats}
-                />
-              );
-            })}
-            {nRowDef && (
+            {basicRows.main.map((def) => (
               <KanaPickerRow
-                rowId={`basic-${script}-n`}
-                rowLabel="ん"
-                cells={nRowDef.cells.map((rk) =>
-                  rk ? (cellKana(basicItems, script, rk) ?? null) : null
-                )}
+                key={def.key}
+                rowId={def.rowId}
+                rowLabel={def.rowLabel}
+                cells={def.cells}
+                cols={5}
+                selected={selected}
+                onToggle={onToggle}
+                onBulkRow={onBulkRow}
+                guessStats={guessStats}
+              />
+            ))}
+            {basicRows.nRow && (
+              <KanaPickerRow
+                rowId={basicRows.nRow.rowId}
+                rowLabel={basicRows.nRow.rowLabel}
+                cells={basicRows.nRow.cells}
                 cols={5}
                 selected={selected}
                 onToggle={onToggle}
@@ -147,26 +202,19 @@ function ScriptColumn({
           guessStats={guessStats}
         >
           <div className="min-w-0 overflow-x-hidden">
-            {Array.from({ length: 5 }, (_, ri) => {
-              const cells: (KanaRow | null)[] = Array.from(
-                { length: 5 },
-                (_, ci) =>
-                  dakutenCellAt(dakutenItems, handakutenItems, ri, ci) ?? null
-              );
-              return (
-                <KanaPickerRow
-                  key={`dak-${script}-${ri}`}
-                  rowId={`dakuten-${script}-${ri}`}
-                  rowLabel={DAKUTEN_HAND_ROW_LABELS[ri] ?? ""}
-                  cells={cells}
-                  cols={5}
-                  selected={selected}
-                  onToggle={onToggle}
-                  onBulkRow={onBulkRow}
-                  guessStats={guessStats}
-                />
-              );
-            })}
+            {dakutenRows.map((def) => (
+              <KanaPickerRow
+                key={def.key}
+                rowId={def.rowId}
+                rowLabel={def.rowLabel}
+                cells={def.cells}
+                cols={5}
+                selected={selected}
+                onToggle={onToggle}
+                onBulkRow={onBulkRow}
+                guessStats={guessStats}
+              />
+            ))}
           </div>
         </KanaTierAccordion>
       )}
@@ -180,32 +228,46 @@ function ScriptColumn({
           guessStats={guessStats}
         >
           <div className="min-w-0 overflow-x-hidden">
-            {YOON_MATRIX.map((_, ri) => {
-              const cells: (KanaRow | null)[] = [0, 1, 2].map((ci) => {
-                const idx = ri * 3 + ci;
-                return yoonItems[idx] ?? null;
-              });
-              const label = YOON_ROW_LABELS[ri] ?? `y-${ri}`;
-              return (
-                <KanaPickerRow
-                  key={`yoon-${script}-${label}`}
-                  rowId={`yoon-${script}-${label}`}
-                  rowLabel={label}
-                  cells={cells}
-                  cols={3}
-                  selected={selected}
-                  onToggle={onToggle}
-                  onBulkRow={onBulkRow}
-                  guessStats={guessStats}
-                />
-              );
-            })}
+            {yoonRows.map((def) => (
+              <KanaPickerRow
+                key={def.key}
+                rowId={def.rowId}
+                rowLabel={def.rowLabel}
+                cells={def.cells}
+                cols={3}
+                selected={selected}
+                onToggle={onToggle}
+                onBulkRow={onBulkRow}
+                guessStats={guessStats}
+              />
+            ))}
           </div>
         </KanaTierAccordion>
       )}
     </div>
   );
 }
+
+function scriptColumnPropsEqual(
+  prev: Readonly<ScriptColumnProps>,
+  next: Readonly<ScriptColumnProps>
+): boolean {
+  if (prev.script !== next.script) return false;
+  if (prev.catalog !== next.catalog) return false;
+  if (prev.onToggle !== next.onToggle) return false;
+  if (prev.onBulkRow !== next.onBulkRow) return false;
+  if (prev.guessStats !== next.guessStats) return false;
+  if (prev.selected === next.selected) return true;
+  // Selection identity changed — check only the keys that belong to this
+  // script so toggles in the sibling script don't rerender us.
+  const scopedKeys: string[] = [];
+  for (const row of next.catalog) {
+    if (row.kana_type === next.script) scopedKeys.push(kanaKey(row));
+  }
+  return selectionWithinKeysEqual(scopedKeys, prev.selected, next.selected);
+}
+
+const ScriptColumn = memo(ScriptColumnInner, scriptColumnPropsEqual);
 
 export function KanaGrid({
   script,
