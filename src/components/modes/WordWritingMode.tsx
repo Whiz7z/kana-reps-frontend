@@ -50,7 +50,6 @@ export function WordWritingMode({ row, onAppendHistory, onAdvance }: Props) {
   lineWidthRef.current = lineWidth;
 
   const [showHint, setShowHint] = useState(false);
-  const [peek, setPeek] = useState(false);
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | "">("");
 
   const onAppendHistoryRef = useRef(onAppendHistory);
@@ -98,7 +97,6 @@ export function WordWritingMode({ row, onAppendHistory, onAdvance }: Props) {
   useEffect(() => {
     clearCanvas();
     setShowHint(false);
-    setPeek(false);
     setFeedback("");
   }, [row.char, row.romaji, clearCanvas]);
 
@@ -159,6 +157,7 @@ export function WordWritingMode({ row, onAppendHistory, onAdvance }: Props) {
         prompt: current.romaji,
         answer: current.char,
         ok,
+        meaning: current.meaning,
       });
       setFeedback(ok ? "correct" : "incorrect");
       window.setTimeout(() => {
@@ -170,7 +169,6 @@ export function WordWritingMode({ row, onAppendHistory, onAdvance }: Props) {
   );
 
   const toggleHint = useCallback(() => setShowHint((v) => !v), []);
-  const togglePeek = useCallback(() => setPeek((v) => !v), []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -198,14 +196,16 @@ export function WordWritingMode({ row, onAppendHistory, onAdvance }: Props) {
   return (
     <div className="flex justify-center py-2">
       <div className="flex w-full max-w-2xl flex-col items-center gap-4 px-2 sm:px-4">
-        <div className="kana-practice-script text-4xl tracking-tight text-[var(--color-foreground)] sm:text-5xl md:text-6xl">
-          {row.romaji.toUpperCase()}
+        <div className="flex flex-col items-center gap-1">
+          <div className="kana-practice-script text-4xl tracking-tight text-[var(--color-foreground)] sm:text-5xl md:text-6xl">
+            {row.romaji.toUpperCase()}
+          </div>
+          {hasMeaning && (
+            <p className="text-base text-slate-600 dark:text-slate-300 md:text-lg">
+              {row.meaning}
+            </p>
+          )}
         </div>
-        {hasMeaning && peek && (
-          <p className="text-base text-slate-700 dark:text-slate-200 md:text-lg">
-            {row.meaning}
-          </p>
-        )}
 
         <div className="w-full rounded-3xl bg-[var(--color-writing-panel-bg)] p-4 shadow-inner sm:p-6">
           <div className="relative mx-auto w-fit max-w-full">
@@ -274,11 +274,6 @@ export function WordWritingMode({ row, onAppendHistory, onAdvance }: Props) {
             <Button variant="outline" onClick={toggleHint}>
               {showHint ? "Hide hint" : "Show hint"}
             </Button>
-            {hasMeaning && (
-              <Button variant="outline" onClick={togglePeek}>
-                {peek ? "Hide English" : "Peek English"}
-              </Button>
-            )}
           </div>
         </div>
 

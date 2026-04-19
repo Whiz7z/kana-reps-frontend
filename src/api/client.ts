@@ -166,7 +166,15 @@ export async function createCheckout(): Promise<{ url: string }> {
   return api("/api/billing/checkout", { method: "POST" });
 }
 
-/** After Stripe redirects with ?session_id=cs_… — confirms paid subscription checkout for this user. */
+/** Returns true when the failure is the backend's "user already paid" 409. */
+export function isAlreadyOwnedError(err: unknown): boolean {
+  if (!(err instanceof ApiRequestError)) return false;
+  if (err.status !== 409) return false;
+  const body = err.body as { error?: { code?: string } } | null;
+  return body?.error?.code === "ALREADY_OWNED";
+}
+
+/** After Stripe redirects with ?session_id=cs_… — confirms a one-time lifetime purchase (`mode=payment`, `payment_status=paid`). */
 export async function verifyCheckoutSession(
   sessionId: string
 ): Promise<{ verified: boolean }> {

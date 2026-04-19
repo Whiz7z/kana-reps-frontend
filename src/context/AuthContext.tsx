@@ -104,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             window.gtag_report_conversion!(undefined, sid);
           } else if (import.meta.env.DEV) {
             console.warn(
-              "[gads] Session not verified — no conversion (check trial/payment_status, customer match, API URL)"
+              "[gads] Session not verified — no conversion (expected mode=payment + payment_status=paid, customer match, correct API URL)"
             );
           }
         } catch (e) {

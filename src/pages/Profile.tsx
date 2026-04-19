@@ -7,7 +7,12 @@ import {
   Save,
   User,
 } from "lucide-react";
-import { createCheckout, createPortal, updateUsername } from "@/api/client";
+import {
+  createCheckout,
+  createPortal,
+  isAlreadyOwnedError,
+  updateUsername,
+} from "@/api/client";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
@@ -31,6 +36,14 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 export function Profile() {
   const navigate = useNavigate();
   const { user, refresh } = useAuth();
@@ -43,6 +56,13 @@ export function Profile() {
   }, [user?.username]);
 
   if (!user) return null;
+
+  const isLifetimeOwner = Boolean(user.purchased_at);
+  // Legacy recurring subscriber: still inside an active billing period.
+  const isLegacySubscriber =
+    user.subscription_status === "active" &&
+    !!user.subscription_expires_at &&
+    !isLifetimeOwner;
 
   async function saveName() {
     setSaving(true);
@@ -57,14 +77,19 @@ export function Profile() {
     }
   }
 
-  async function subscribe() {
+  async function buyLifetime() {
     setBillingBusy(true);
     try {
       const { url } = await createCheckout();
       window.location.href = url;
     } catch (e) {
-      console.error(e);
-      alert("Checkout failed");
+      if (isAlreadyOwnedError(e)) {
+        await refresh();
+        alert("You already have lifetime access.");
+      } else {
+        console.error(e);
+        alert("Checkout failed");
+      }
       setBillingBusy(false);
     }
   }
@@ -76,7 +101,7 @@ export function Profile() {
       window.location.href = url;
     } catch (e) {
       console.error(e);
-      alert("Open billing portal (needs Stripe customer)");
+      alert("Billing portal is only available for legacy subscribers");
       setBillingBusy(false);
     }
   }
@@ -142,10 +167,14 @@ export function Profile() {
       <section className="rounded-3xl border border-slate-100/80 bg-[var(--color-paper)] p-4 shadow-xl shadow-slate-200/50 dark:border-white/10 dark:shadow-black/40 sm:p-6">
         <h2 className="flex items-center gap-2 text-base font-semibold text-slate-700 sm:text-lg">
           <CreditCard className="h-5 w-5 text-indigo-600" />
-          Subscription
+          {isLifetimeOwner ? "Lifetime access" : "Access"}
         </h2>
         <p className="mt-1 text-sm text-slate-500">
-          Manage your subscription and billing.
+          {isLifetimeOwner
+            ? "Thanks for supporting KanaReps — you're unlocked forever."
+            : isLegacySubscriber
+              ? "Manage your legacy subscription and billing."
+              : "Unlock writing mode, word practice, and unlimited custom sets with a one-time payment."}
         </p>
         <div className="mt-4 space-y-3">
           <div className="flex items-center justify-between gap-2">
@@ -156,60 +185,65 @@ export function Profile() {
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-500">Trial expires</span>
               <span className="font-medium text-slate-800">
-                {new Date(user.trial_expires_at).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                {formatDate(user.trial_expires_at)}
               </span>
             </div>
           )}
-          {user.subscription_status === "active" &&
-            user.subscription_expires_at && (
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-500">Next billing</span>
-                <span className="font-medium text-slate-800">
-                  {new Date(user.subscription_expires_at).toLocaleDateString()}
-                </span>
-              </div>
-            )}
-          {(user.subscription_status === "expired" ||
-            user.subscription_status === "cancelled") && (
-            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-              <p className="text-sm text-yellow-900">
-                Subscribe to keep full access to writing and premium sets.
-              </p>
+          {isLifetimeOwner && user.purchased_at && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-500">Purchased</span>
+              <span className="font-medium text-slate-800">
+                {formatDate(user.purchased_at)}
+              </span>
             </div>
           )}
+          {isLegacySubscriber && user.subscription_expires_at && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-500">Next billing</span>
+              <span className="font-medium text-slate-800">
+                {new Date(user.subscription_expires_at).toLocaleDateString()}
+              </span>
+            </div>
+          )}
+          {!isLifetimeOwner &&
+            !isLegacySubscriber &&
+            (user.subscription_status === "expired" ||
+              user.subscription_status === "cancelled") && (
+              <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+                <p className="text-sm text-yellow-900">
+                  Get lifetime access to keep writing mode and premium sets
+                  unlocked forever.
+                </p>
+              </div>
+            )}
           <div className="flex flex-wrap gap-3 pt-2">
-            {user.subscription_status !== "active" && (
+            {!isLifetimeOwner && !isLegacySubscriber && (
               <Button
                 className="flex-1 text-white"
                 disabled={billingBusy}
-                onClick={() => void subscribe()}
+                onClick={() => void buyLifetime()}
               >
                 {billingBusy ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  "Subscribe now"
+                  "Get lifetime access"
                 )}
               </Button>
             )}
-            {user.subscription_status === "active" &&
-              user.stripe_customer_id && (
-                <Button
-                  variant="secondary"
-                  className="flex-1"
-                  disabled={billingBusy}
-                  onClick={() => void portal()}
-                >
-                  {billingBusy ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "Manage billing"
-                  )}
-                </Button>
-              )}
+            {isLegacySubscriber && user.stripe_customer_id && (
+              <Button
+                variant="secondary"
+                className="flex-1"
+                disabled={billingBusy}
+                onClick={() => void portal()}
+              >
+                {billingBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Manage billing"
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </section>

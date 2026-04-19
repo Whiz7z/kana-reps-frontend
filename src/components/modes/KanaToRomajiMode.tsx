@@ -33,6 +33,7 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
       prompt: row.char,
       answer: ok ? input.trim() || row.romaji : row.romaji,
       ok,
+      meaning: isWord ? row.meaning : undefined,
     });
   }, [input, row, onRoundComplete, user, isWord]);
 

@@ -1,4 +1,9 @@
-type Entry = { prompt: string; answer: string; ok: boolean };
+type Entry = {
+  prompt: string;
+  answer: string;
+  ok: boolean;
+  meaning?: string;
+};
 
 export function QuestionHistory({ items }: { items: Entry[] }) {
   const display = [...items].reverse().slice(0, 10);
@@ -21,14 +26,21 @@ export function QuestionHistory({ items }: { items: Entry[] }) {
             className="rounded-2xl border border-violet-200/80 bg-violet-50/70 p-3 dark:border-violet-800/50 dark:bg-violet-950/35"
           >
             <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0 text-sm font-medium text-slate-800 dark:text-slate-100">
-                <span className="kana-practice-script break-all text-base">
-                  {e.prompt}
-                </span>
-                <span className="text-slate-500"> → </span>
-                <span className="kana-practice-script break-all text-base">
-                  {e.answer}
-                </span>
+              <div className="min-w-0 flex-1 text-sm font-medium text-slate-800 dark:text-slate-100">
+                <div>
+                  <span className="kana-practice-script break-all text-base">
+                    {e.prompt}
+                  </span>
+                  <span className="text-slate-500"> → </span>
+                  <span className="kana-practice-script break-all text-base">
+                    {e.answer}
+                  </span>
+                </div>
+                {e.meaning && (
+                  <div className="mt-1 text-xs font-normal text-slate-600 dark:text-slate-400">
+                    {e.meaning}
+                  </div>
+                )}
               </div>
               <span
                 className={`shrink-0 text-lg ${

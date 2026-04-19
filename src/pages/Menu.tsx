@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookText, Feather, Grid2x2Check, Loader2 } from "lucide-react";
-import { ApiRequestError, createCheckout, postDrill } from "@/api/client";
+import {
+  ApiRequestError,
+  createCheckout,
+  isAlreadyOwnedError,
+  postDrill,
+} from "@/api/client";
 import type { PracticeMode } from "@/api/types";
 import { useAuth } from "@/context/AuthContext";
 import { SetButton } from "@/components/SetButton";
@@ -27,7 +32,7 @@ const LEVELS = ["Basic", "Dakuten", "Handakuten", "Yoon"] as const;
 
 export function Menu() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refresh } = useAuth();
   const [mode, setMode] = useState<PracticeMode>("kana-to-romaji");
   const [levelsH, setLevelsH] = useState<Set<string>>(new Set());
   const [levelsK, setLevelsK] = useState<Set<string>>(new Set());
@@ -105,8 +110,13 @@ export function Menu() {
       const { url } = await createCheckout();
       window.location.href = url;
     } catch (err) {
-      console.error(err);
-      alert("Checkout failed — are you signed in?");
+      if (isAlreadyOwnedError(err)) {
+        await refresh();
+        alert("You already have lifetime access.");
+      } else {
+        console.error(err);
+        alert("Checkout failed — are you signed in?");
+      }
       setCheckoutBusy(false);
     }
   }
@@ -120,7 +130,7 @@ export function Menu() {
         onSubscribe={handleSubscribe}
       />
 
-      <div className="mb-8 flex flex-col-reverse items-start justify-between gap-4 sm:flex-row">
+      <div className="flex flex-col-reverse items-start justify-between gap-4 sm:flex-row">
         <div>
           {/* <h1 className="kana-page-title mb-2 text-4xl font-bold">KanaReps</h1>
           <p className="text-slate-600 dark:text-slate-400">
@@ -134,9 +144,12 @@ export function Menu() {
                   {new Date(user.trial_expires_at).toLocaleDateString()}
                 </>
               )}
-              {user.subscription_status === "active" && (
-                <>Subscription active</>
-              )}
+              {user.subscription_status === "active" &&
+                (user.purchased_at ? (
+                  <>Lifetime access</>
+                ) : (
+                  <>Subscription active</>
+                ))}
               {user.subscription_status === "expired" && <>Trial expired</>}
             </p>
           )}
@@ -154,7 +167,7 @@ export function Menu() {
                   Loading…
                 </>
               ) : (
-                "Subscribe"
+                "Get lifetime access"
               )}
             </Button>
           )}

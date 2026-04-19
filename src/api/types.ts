@@ -4,7 +4,10 @@ export type MeResponse = {
   username: string | null;
   subscription_status: string;
   trial_expires_at: string | null;
+  /** Legacy recurring subscription period end (grandfathered users only). */
   subscription_expires_at: string | null;
+  /** ISO timestamp of the user's lifetime purchase, or null if none. */
+  purchased_at: string | null;
   stripe_customer_id: string | null;
   role: string;
   hasAccess: boolean;

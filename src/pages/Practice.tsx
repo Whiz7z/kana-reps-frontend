@@ -94,7 +94,7 @@ export function Practice() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="rounded-3xl border border-slate-100/80 bg-[var(--color-paper)] p-3 shadow-xl shadow-slate-200/50 dark:border-white/10 dark:shadow-black/40 sm:p-8">
+          <div className="rounded-3xl border border-slate-100/80 bg-[var(--color-paper)] p-1 shadow-xl shadow-slate-200/50 dark:border-white/10 dark:shadow-black/40 sm:p-8">
             {mode === "writing" ? (
               isWord ? (
                 <WordWritingMode

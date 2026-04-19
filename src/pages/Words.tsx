@@ -10,6 +10,7 @@ import {
   ApiRequestError,
   createCheckout,
   fetchWordCategories,
+  isAlreadyOwnedError,
   postWordDrill,
 } from "@/api/client";
 import { Button } from "@/components/ui/Button";
@@ -63,7 +64,7 @@ function categoryLabel(id: string): string {
 
 export function Words() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refresh } = useAuth();
 
   const [mode, setMode] = useState<WordMode>(() => {
     const raw = localStorage.getItem(KEY_MODE);
@@ -139,7 +140,7 @@ export function Words() {
         if (cancelled) return;
         if (err instanceof ApiRequestError && (err.status === 401 || err.status === 403)) {
           setSubOpen(true);
-          setCategoriesError("Word practice requires an active subscription.");
+          setCategoriesError("Word practice is part of lifetime access.");
         } else {
           setCategoriesError(err instanceof Error ? err.message : "Could not load categories");
         }
@@ -264,8 +265,14 @@ export function Words() {
       const { url } = await createCheckout();
       window.location.href = url;
     } catch (err) {
-      console.error(err);
-      alert("Checkout failed — sign in and try again.");
+      if (isAlreadyOwnedError(err)) {
+        await refresh();
+        setSubOpen(false);
+        alert("You already have lifetime access.");
+      } else {
+        console.error(err);
+        alert("Checkout failed — sign in and try again.");
+      }
     }
   }
 
@@ -351,7 +358,7 @@ export function Words() {
       {!wordOk && (
         <div className={cn("mb-6", cardShellClass)}>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Word practice needs an active trial or subscription.{" "}
+            Word practice is part of lifetime access.{" "}
             <button
               type="button"
               className="font-semibold text-[var(--color-primary)] underline-offset-2 hover:underline"

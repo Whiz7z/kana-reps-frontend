@@ -62,6 +62,13 @@ export function cellKana(
   cellKey: string | null
 ): KanaRow | undefined {
   if (!cellKey) return undefined;
+  const normCell = normalizeRomajiKey(cellKey);
+  // Prefer exact romaji match so that "o" and "wo" don't collapse to the
+  // same cell when both exist in the catalog (e.g. お vs を, オ vs ヲ).
+  const exact = rows.find(
+    (r) => r.kana_type === script && normalizeRomajiKey(r.romaji) === normCell
+  );
+  if (exact) return exact;
   return rows.find(
     (r) => r.kana_type === script && romajiMatchesCell(r.romaji, cellKey)
   );

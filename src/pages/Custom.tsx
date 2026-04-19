@@ -7,6 +7,7 @@ import {
   createCheckout,
   fetchKanaCatalog,
   fetchKanaGuessStats,
+  isAlreadyOwnedError,
   postDrill,
 } from "@/api/client";
 import { KanaGrid } from "@/components/KanaGrid";
@@ -59,7 +60,7 @@ function loadInitialSelected(): Set<string> {
 
 export function Custom() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refresh } = useAuth();
   const [catalog, setCatalog] = useState<KanaRow[]>([]);
   const [tab, setTab] = useState<"hiragana" | "katakana">(() => {
     const t = localStorage.getItem(KEY_TAB);
@@ -229,8 +230,14 @@ export function Custom() {
             const { url } = await createCheckout();
             window.location.href = url;
           } catch (err) {
-            console.error(err);
-            alert("Checkout failed — sign in and try again.");
+            if (isAlreadyOwnedError(err)) {
+              await refresh();
+              setSubOpen(false);
+              alert("You already have lifetime access.");
+            } else {
+              console.error(err);
+              alert("Checkout failed — sign in and try again.");
+            }
           }
         }}
       />

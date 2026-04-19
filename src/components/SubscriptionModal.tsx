@@ -12,11 +12,11 @@ type Props = {
 const COPY: Record<SubscriptionFeature, { title: string; body: string }> = {
   writing: {
     title: "Unlock writing mode",
-    body: "Writing practice needs an active trial or subscription. Start checkout to continue.",
+    body: "Writing practice is part of lifetime access. One payment, unlocked forever.",
   },
   word_practice: {
     title: "Unlock word practice",
-    body: "Word practice needs an active trial or subscription. Start checkout to continue.",
+    body: "Word practice is part of lifetime access. One payment, unlocked forever.",
   },
 };
 
@@ -45,7 +45,7 @@ export function SubscriptionModal({
             className="flex-1 text-white"
             onClick={onSubscribe}
           >
-            Subscribe
+            Get lifetime access
           </Button>
           <Button type="button" variant="secondary" onClick={onClose}>
             Not now
