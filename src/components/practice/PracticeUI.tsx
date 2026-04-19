@@ -143,7 +143,6 @@ export function PracticePromptCard({
         minHeight,
       }}
     >
-      {showAccentMark && <PromptAccentMark />}
       {children}
     </div>
   );
@@ -154,45 +153,7 @@ export function PracticePromptCard({
  * 印 seal; Modern Dark gets a small violet dot. Detected via the
  * `.dark` ancestor class.
  */
-function PromptAccentMark() {
-  return (
-    <>
-      <span
-        aria-hidden
-        className="absolute block dark:hidden"
-        style={{
-          top: 12,
-          right: 12,
-          width: 24,
-          height: 24,
-          background: "var(--practice-accent)",
-          color: "var(--practice-accent-ink)",
-          fontFamily: "var(--practice-kana-font)",
-          fontSize: 13,
-          fontWeight: 700,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: 3,
-        }}
-      >
-        印
-      </span>
-      <span
-        aria-hidden
-        className="absolute hidden dark:block"
-        style={{
-          top: 14,
-          right: 14,
-          width: 6,
-          height: 6,
-          borderRadius: "50%",
-          background: "var(--practice-accent)",
-        }}
-      />
-    </>
-  );
-}
+
 
 // ---------------------------------------------------------------------------
 // Kana glyph / romaji prompt helpers.
@@ -249,7 +210,8 @@ type PracticeTextInputProps = {
   value: string;
   onChange: (next: string) => void;
   onSubmit: () => void;
-  onSpecialKey?: (e: KeyboardEvent<HTMLInputElement>) => void;
+  /** Return `true` if the event was handled (caller will `preventDefault` so e.g. Tab does not move focus). */
+  onSpecialKey?: (e: KeyboardEvent<HTMLInputElement>) => void | boolean;
   placeholder?: string;
   submitLabel?: string;
   autoFocus?: boolean;
@@ -287,7 +249,10 @@ export function PracticeTextInput({
             onSubmit();
             return;
           }
-          onSpecialKey?.(e);
+          if (onSpecialKey) {
+            const handled = onSpecialKey(e);
+            if (handled) e.preventDefault();
+          }
         }}
         placeholder={placeholder}
         className="practice-ui flex-1 bg-transparent outline-none"

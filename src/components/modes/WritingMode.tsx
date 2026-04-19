@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KanaRow } from "@/api/types";
 import { reportKanaGuess } from "@/api/client";
+import { KanaStrokeHint } from "@/components/practice/KanaStrokeHint";
 import {
   PracticeButton,
   PracticeFeedback,
@@ -10,6 +11,7 @@ import {
 } from "@/components/practice/PracticeUI";
 import { useAuth } from "@/context/AuthContext";
 import { useColorMode } from "@/context/ColorModeContext";
+import { loadKanaStrokeHintData, type KanaStrokeHintPayload } from "@/lib/kanaStrokeData";
 import { cn } from "@/lib/utils";
 import type { HistoryEntry } from "./types";
 
@@ -75,6 +77,7 @@ export function WritingMode({ row, onAppendHistory, onAdvance }: Props) {
   } | null>(null);
 
   const [showHint, setShowHint] = useState(false);
+  const [hintPayload, setHintPayload] = useState<KanaStrokeHintPayload | null>(null);
   const [lineWidth, setLineWidth] = useState(5);
   const lineWidthRef = useRef(lineWidth);
   lineWidthRef.current = lineWidth;
@@ -170,7 +173,23 @@ export function WritingMode({ row, onAppendHistory, onAdvance }: Props) {
   useEffect(() => {
     hwRef.current?.erase();
     setShowHint(false);
-  }, [row.romaji]);
+  }, [row.romaji, row.char]);
+
+  useEffect(() => {
+    if (!showHint) {
+      setHintPayload(null);
+      return;
+    }
+    let cancelled = false;
+    setHintPayload(null);
+    void (async () => {
+      const data = await loadKanaStrokeHintData(row.char, row.kana_type);
+      if (!cancelled) setHintPayload(data);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [showHint, row.char, row.kana_type]);
 
   const handleRecognize = () => {
     hwRef.current?.recognize();
@@ -221,15 +240,33 @@ export function WritingMode({ row, onAppendHistory, onAdvance }: Props) {
           />
           {showHint && (
             <div
-              className="practice-kana pointer-events-none absolute inset-0 flex items-center justify-center"
-              style={{
-                fontSize: "clamp(120px, 42vw, 220px)",
-                color: "var(--practice-text-tertiary)",
-                opacity: 0.28,
-                lineHeight: 1,
-              }}
+              className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+              style={{ borderRadius: "var(--practice-radius)" }}
             >
-              {row.char}
+              {hintPayload ? (
+                <div className="box-border h-full min-h-0 w-full px-0.5 py-0.5">
+                  <KanaStrokeHint payload={hintPayload} />
+                </div>
+              ) : (
+                <div
+                  className="practice-kana flex max-h-full max-w-full items-center justify-center gap-1 px-1"
+                  style={{
+                    fontSize:
+                      [...row.char].length <= 1
+                        ? "clamp(120px, 42vw, 220px)"
+                        : [...row.char].length === 2
+                          ? "clamp(48px, 14vmin, 100px)"
+                          : "clamp(32px, 10vmin, 72px)",
+                    color: "var(--practice-text-tertiary)",
+                    opacity: 0.28,
+                    lineHeight: 1,
+                  }}
+                >
+                  {[...row.char].map((ch, i) => (
+                    <span key={`${ch}-${i}`}>{ch}</span>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

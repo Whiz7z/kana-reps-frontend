@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { KanaRow } from "@/api/types";
 import {
   PracticeButton,
@@ -56,7 +56,12 @@ export function WordWritingMode({ row, onAppendHistory, onAdvance }: Props) {
   lineWidthRef.current = lineWidth;
 
   const [showHint, setShowHint] = useState(false);
+  const [hintFontPx, setHintFontPx] = useState(48);
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | "">("");
+
+  const canvasWrapRef = useRef<HTMLDivElement | null>(null);
+  const hintMeasureRef = useRef<HTMLDivElement | null>(null);
+  const [hintBox, setHintBox] = useState({ w: 0, h: 0 });
 
   const onAppendHistoryRef = useRef(onAppendHistory);
   onAppendHistoryRef.current = onAppendHistory;
@@ -105,6 +110,49 @@ export function WordWritingMode({ row, onAppendHistory, onAdvance }: Props) {
     setShowHint(false);
     setFeedback("");
   }, [row.char, row.romaji, clearCanvas]);
+
+  useEffect(() => {
+    const el = canvasWrapRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      setHintBox({ w: el.clientWidth, h: el.clientHeight });
+    });
+    ro.observe(el);
+    setHintBox({ w: el.clientWidth, h: el.clientHeight });
+    return () => ro.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!showHint) return;
+    const wrap = canvasWrapRef.current;
+    const meas = hintMeasureRef.current;
+    if (!wrap || !meas) return;
+    /** Match overlay `px-1.5 py-1.5` (6px each side). */
+    const pad = 12;
+    const innerW = Math.max(0, wrap.clientWidth - pad);
+    const innerH = Math.max(0, wrap.clientHeight - pad);
+    if (innerW < 8 || innerH < 8) return;
+
+    meas.textContent = row.char;
+    meas.style.width = `${innerW}px`;
+    meas.style.lineHeight = "1.12";
+    meas.style.letterSpacing = "0.05em";
+
+    let lo = 10;
+    let hi = Math.min(220, Math.floor(Math.min(innerW, innerH) * 1.35));
+    let best = lo;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      meas.style.fontSize = `${mid}px`;
+      if (meas.scrollWidth <= innerW && meas.scrollHeight <= innerH) {
+        best = mid;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
+      }
+    }
+    setHintFontPx(best);
+  }, [showHint, row.char, hintBox.w, hintBox.h, mode]);
 
   function getCanvasPoint(
     canvas: HTMLCanvasElement,
@@ -229,37 +277,56 @@ export function WordWritingMode({ row, onAppendHistory, onAdvance }: Props) {
           padding: 16,
         }}
       >
-        <div className="relative w-full overflow-x-auto">
-          <canvas
-            ref={bindCanvas}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
-            onPointerLeave={handlePointerUp}
-            className={cn("mx-auto block touch-none cursor-crosshair")}
-            style={{
-              maxWidth: "100%",
-              height: "auto",
-              background: "var(--practice-surface-elev)",
-              border: "1px solid var(--practice-stroke)",
-              borderRadius: "var(--practice-radius)",
-            }}
-          />
-          {showHint && (
-            <div
-              className="practice-kana pointer-events-none absolute inset-0 flex items-center justify-center"
+        <div className="flex w-full justify-center overflow-hidden">
+          <div
+            ref={canvasWrapRef}
+            className="relative inline-block max-w-full overflow-hidden"
+            style={{ borderRadius: "var(--practice-radius)" }}
+          >
+            <canvas
+              ref={bindCanvas}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              onPointerLeave={handlePointerUp}
+              className={cn("block max-w-full touch-none cursor-crosshair")}
               style={{
-                fontSize: "clamp(80px, 18vw, 160px)",
-                color: "var(--practice-text-tertiary)",
-                opacity: 0.28,
-                lineHeight: 1,
-                letterSpacing: "0.05em",
+                maxWidth: "100%",
+                height: "auto",
+                background: "var(--practice-surface-elev)",
+                border: "1px solid var(--practice-stroke)",
+                borderRadius: "var(--practice-radius)",
               }}
-            >
-              {row.char}
-            </div>
-          )}
+            />
+            <div
+              ref={hintMeasureRef}
+              className="practice-kana pointer-events-none invisible absolute left-0 top-0 box-border overflow-hidden whitespace-normal wrap-break-word text-center"
+              style={{
+                lineHeight: 1.12,
+                letterSpacing: "0.05em",
+                overflowWrap: "anywhere",
+                wordBreak: "keep-all",
+              }}
+              aria-hidden
+            />
+            {showHint && (
+              <div
+                className="practice-kana pointer-events-none absolute inset-0 box-border flex items-center justify-center overflow-hidden px-1.5 py-1.5 text-center"
+                style={{
+                  fontSize: `${hintFontPx}px`,
+                  lineHeight: 1.12,
+                  letterSpacing: "0.05em",
+                  color: "var(--practice-text-tertiary)",
+                  opacity: 0.28,
+                  overflowWrap: "anywhere",
+                  wordBreak: "keep-all",
+                }}
+              >
+                {row.char}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex w-full max-w-xs flex-col gap-2">

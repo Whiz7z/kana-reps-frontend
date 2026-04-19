@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^9.0.0",
     "@react-oauth/google": "^0.13.5",
+    "kana-svg-data": "^0.0.2",
     "lucide-react": "^0.483.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

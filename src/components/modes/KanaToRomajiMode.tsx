@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { KanaRow } from "@/api/types";
 import { reportKanaGuess } from "@/api/client";
 import {
+  PracticeButton,
   PracticeHints,
   PracticeKanaGlyph,
   PracticePromptCard,
@@ -51,10 +52,12 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
     <>
       <PracticePromptCard minHeight={180}>
         <PracticeKanaGlyph size={kanaSize}>{row.char}</PracticeKanaGlyph>
-        {hasMeaning && peek && (
+        {hasMeaning && (
           <p
+            id="practice-word-meaning"
             aria-live="polite"
             className="practice-ui mt-4 text-center"
+            hidden={!peek}
             style={{
               color: "var(--practice-text-secondary)",
               fontSize: 14,
@@ -70,9 +73,10 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
         onChange={setInput}
         onSubmit={checkAnswer}
         onSpecialKey={(e) => {
-          if (hasMeaning && e.key === "Tab") {
-            e.preventDefault();
+          const isTab = e.key === "Tab" || e.code === "Tab";
+          if (hasMeaning && isTab) {
             setPeek((v) => !v);
+            return true;
           }
         }}
         placeholder="Type romaji…"
@@ -86,6 +90,20 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
           spellCheck: false,
         }}
       />
+
+      {hasMeaning && (
+        <div className="flex justify-center">
+          <PracticeButton
+            variant="ghost"
+            aria-expanded={peek}
+            aria-controls="practice-word-meaning"
+            onClick={() => setPeek((v) => !v)}
+            className="max-w-full"
+          >
+            {peek ? "Hide English" : "Peek English"}
+          </PracticeButton>
+        </div>
+      )}
 
       <PracticeHints
         hints={
