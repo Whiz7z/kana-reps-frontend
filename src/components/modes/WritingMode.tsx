@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KanaRow } from "@/api/types";
 import { reportKanaGuess } from "@/api/client";
-import { Button } from "@/components/ui/Button";
+import {
+  PracticeButton,
+  PracticeFeedback,
+  PracticeHints,
+  PracticePromptCard,
+  PracticeRomajiGlyph,
+} from "@/components/practice/PracticeUI";
 import { useAuth } from "@/context/AuthContext";
 import { useColorMode } from "@/context/ColorModeContext";
 import { cn } from "@/lib/utils";
@@ -16,9 +22,9 @@ const WRITING_CANVAS_LOGICAL_PX = 300;
 /** Higher = sharper strokes on HiDPI (cost: more pixels / GPU). */
 const WRITING_DPR_CAP = 3;
 
-function readWritingStrokeCss(): string {
+function readPracticeTextCss(): string {
   return getComputedStyle(document.documentElement)
-    .getPropertyValue("--color-writing-stroke")
+    .getPropertyValue("--practice-text")
     .trim();
 }
 
@@ -126,13 +132,13 @@ export function WritingMode({ row, onAppendHistory, onAdvance }: Props) {
       }
     });
     hwRef.current = hw;
-    const stroke = readWritingStrokeCss();
+    const stroke = readPracticeTextCss();
     const cxt = (hw as unknown as HandwritingInstance).cxt;
     if (stroke && cxt) cxt.strokeStyle = stroke;
   }, []);
 
   useEffect(() => {
-    const stroke = readWritingStrokeCss();
+    const stroke = readPracticeTextCss();
     const hw = hwRef.current as unknown as HandwritingInstance | null;
     if (stroke && hw?.cxt) hw.cxt.strokeStyle = stroke;
   }, [mode]);
@@ -166,20 +172,6 @@ export function WritingMode({ row, onAppendHistory, onAdvance }: Props) {
     setShowHint(false);
   }, [row.romaji]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    if (drawingDisabled) {
-      canvas.style.pointerEvents = "none";
-      canvas.style.cursor = "not-allowed";
-      canvas.style.opacity = "0.6";
-    } else {
-      canvas.style.pointerEvents = "auto";
-      canvas.style.cursor = "crosshair";
-      canvas.style.opacity = "1";
-    }
-  }, [drawingDisabled]);
-
   const handleRecognize = () => {
     hwRef.current?.recognize();
     setRecognizing(true);
@@ -196,96 +188,95 @@ export function WritingMode({ row, onAppendHistory, onAdvance }: Props) {
   };
 
   return (
-    <div className="flex justify-center py-2">
-      <div className="flex w-full max-w-md flex-col items-center gap-4 px-2 sm:px-4">
-        <div className="kana-practice-script text-6xl tracking-tight text-[var(--color-foreground)] sm:text-7xl md:text-8xl">
+    <>
+      <PracticePromptCard minHeight={200}>
+        <PracticeRomajiGlyph size={44}>
           {row.romaji.toUpperCase()}
-        </div>
+        </PracticeRomajiGlyph>
+      </PracticePromptCard>
 
-        <div className="w-full rounded-3xl bg-[var(--color-writing-panel-bg)] p-4 shadow-inner sm:p-6">
-          <div className="relative mx-auto w-fit max-w-full">
-            <canvas
-              ref={bindCanvas}
-              className={cn(
-                "touch-none rounded-2xl border border-[var(--color-writing-canvas-border)] bg-[var(--color-writing-canvas-bg)]",
-                drawingDisabled ? "cursor-not-allowed opacity-60" : "cursor-crosshair"
-              )}
-              style={{ maxWidth: "100%", height: "auto" }}
-            />
-            {showHint && (
-              <div
-                className="kana-practice-script pointer-events-none absolute inset-0 flex items-center justify-center opacity-30"
-                style={{
-                  fontSize: "clamp(120px, 42vw, 220px)",
-                  color: "var(--color-writing-hint)",
-                  lineHeight: 1,
-                }}
-              >
-                {row.char}
-              </div>
-            )}
-          </div>
-
-          <div className="mx-auto mt-4 flex w-full max-w-xs flex-col gap-2">
-            <label className="text-center text-sm text-[var(--color-muted)]">
-              Line width: {lineWidth}px
-            </label>
-            <input
-              type="range"
-              min={1}
-              max={20}
-              value={lineWidth}
-              disabled={drawingDisabled}
-              onChange={(e) => setLineWidth(Number(e.target.value))}
-              className="h-2 w-full cursor-pointer appearance-none rounded-lg accent-[var(--color-primary)] disabled:opacity-50"
-              style={{
-                background: `linear-gradient(to right, var(--color-primary) 0%, var(--color-primary) ${((lineWidth - 1) / 19) * 100}%, var(--color-range-track-rest) ${((lineWidth - 1) / 19) * 100}%, var(--color-range-track-rest) 100%)`,
-              }}
-            />
-            <div className="flex justify-between text-xs text-[var(--color-muted)]">
-              <span>Thin</span>
-              <span>Thick</span>
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
-            <Button
-              className="min-w-[6rem]"
-              disabled={drawingDisabled}
-              onClick={handleRecognize}
-            >
-              {recognizing ? "Recognizing…" : "Check"}
-            </Button>
-            <Button
-              variant="outline"
-              disabled={recognizing}
-              onClick={handleClear}
-            >
-              Clear
-            </Button>
-            <Button variant="outline" onClick={handleReveal}>
-              {showHint ? "Hide hint" : "Reveal answer"}
-            </Button>
-          </div>
-        </div>
-
-        {feedback && (
-          <p
+      <div
+        className="flex flex-col items-center gap-4"
+        style={{
+          background: "var(--practice-surface)",
+          border: "1px solid var(--practice-stroke-subtle)",
+          borderRadius: "var(--practice-radius-lg)",
+          padding: 16,
+        }}
+      >
+        <div className="relative">
+          <canvas
+            ref={bindCanvas}
             className={cn(
-              "text-center text-lg font-semibold",
-              feedback === "correct"
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-red-600 dark:text-red-400"
+              "touch-none",
+              drawingDisabled ? "cursor-not-allowed opacity-60" : "cursor-crosshair"
             )}
-          >
-            {feedback === "correct" ? "✓ Correct!" : "✗ Try again"}
-          </p>
-        )}
+            style={{
+              maxWidth: "100%",
+              height: "auto",
+              background: "var(--practice-surface-elev)",
+              border: "1px solid var(--practice-stroke)",
+              borderRadius: "var(--practice-radius)",
+            }}
+          />
+          {showHint && (
+            <div
+              className="practice-kana pointer-events-none absolute inset-0 flex items-center justify-center"
+              style={{
+                fontSize: "clamp(120px, 42vw, 220px)",
+                color: "var(--practice-text-tertiary)",
+                opacity: 0.28,
+                lineHeight: 1,
+              }}
+            >
+              {row.char}
+            </div>
+          )}
+        </div>
 
-        <p className="text-center text-sm text-[var(--color-muted)]">
-          Draw the kana character and click &quot;Check&quot; to verify.
-        </p>
+        <div className="flex w-full max-w-xs flex-col gap-2">
+          <label
+            className="practice-ui text-center text-xs"
+            style={{ color: "var(--practice-text-tertiary)" }}
+          >
+            Line width: {lineWidth}px
+          </label>
+          <input
+            type="range"
+            min={1}
+            max={20}
+            value={lineWidth}
+            disabled={drawingDisabled}
+            onChange={(e) => setLineWidth(Number(e.target.value))}
+            className="h-2 w-full cursor-pointer appearance-none rounded-lg disabled:opacity-50"
+            style={{
+              background: `linear-gradient(to right, var(--practice-accent) 0%, var(--practice-accent) ${((lineWidth - 1) / 19) * 100}%, var(--practice-stroke) ${((lineWidth - 1) / 19) * 100}%, var(--practice-stroke) 100%)`,
+              accentColor: "var(--practice-accent)",
+            }}
+          />
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-2">
+          <PracticeButton disabled={drawingDisabled} onClick={handleRecognize}>
+            {recognizing ? "Recognizing…" : "Check"}
+          </PracticeButton>
+          <PracticeButton variant="ghost" disabled={recognizing} onClick={handleClear}>
+            Clear
+          </PracticeButton>
+          <PracticeButton variant="ghost" onClick={handleReveal}>
+            {showHint ? "Hide hint" : "Reveal"}
+          </PracticeButton>
+        </div>
       </div>
-    </div>
+
+      {feedback && <PracticeFeedback kind={feedback} />}
+
+      <PracticeHints
+        hints={[
+          { key: "Enter", label: "check" },
+          { key: "Space", label: "hint" },
+        ]}
+      />
+    </>
   );
 }

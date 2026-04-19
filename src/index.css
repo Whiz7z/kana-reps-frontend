@@ -32,6 +32,43 @@
   --color-writing-stroke: #0f172a;
   --color-writing-panel-bg: rgba(237, 233, 254, 0.92);
   --color-writing-hint: #64748b;
+
+  /* Shared Washi / Dark design system — Minimal 和紙 (light).
+     Historically namespaced `--practice-*`; now the app-wide token layer used
+     by Layout / Home / Profile / Menu / Practice / Custom / Words. */
+  --practice-bg: #f4eee2;
+  --practice-surface: #fbf6eb;
+  --practice-surface-elev: #fffdf7;
+  --practice-stroke: #d8cfbb;
+  --practice-stroke-subtle: #e7dfcb;
+  --practice-text: #1e1a14;
+  --practice-text-secondary: #5a5141;
+  --practice-text-tertiary: #8c8471;
+  --practice-accent: #b13a2f;
+  --practice-accent-soft: #f1dad4;
+  --practice-accent-ink: #fffdf7;
+  --practice-hover-tint: #efe6d2;
+  --practice-input-bg: #fffdf7;
+  --practice-input-bg-disabled: #efe7d4;
+  --practice-success: #4f7a4b;
+  --practice-success-soft: #dde7cf;
+  --practice-info: #3d5a80;
+  --practice-info-soft: #dae3ee;
+  --practice-warning: #a17a2b;
+  --practice-warning-soft: #efe3c2;
+  --practice-warning-ink: #6a4f1a;
+  --practice-danger: #b13a2f;
+  --practice-danger-soft: #f1dad4;
+  --practice-kana-font:
+    "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --practice-ui-font:
+    "Inter", "Noto Sans JP", system-ui, sans-serif;
+  /* Display font used for brand wordmark / page titles. Light leans serif, dark
+     stays on Inter for Latin readability. */
+  --practice-display-font:
+    "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --practice-kana-weight: 400;
+  --practice-watermark-opacity: 0.07;
 }
 
 .dark {
@@ -63,16 +100,48 @@
   --color-writing-stroke: #e2e8f0;
   --color-writing-panel-bg: rgba(76, 29, 149, 0.28);
   --color-writing-hint: #94a3b8;
+
+  /* Shared Washi / Dark design system — Modern Dark (dark).
+     Washi-small radii kept across both themes via --practice-radius. */
+  --practice-bg: #0b0c12;
+  --practice-surface: #14161f;
+  --practice-surface-elev: #1b1e2a;
+  --practice-stroke: #2a2e3d;
+  --practice-stroke-subtle: #20232f;
+  --practice-text: #f3f4f9;
+  --practice-text-secondary: #a6abbe;
+  --practice-text-tertiary: #6c7186;
+  --practice-accent: #8b7cff;
+  --practice-accent-soft: #2a2649;
+  --practice-accent-ink: #0b0c12;
+  --practice-hover-tint: #1b1e2a;
+  --practice-input-bg: #0f111a;
+  --practice-input-bg-disabled: #191c27;
+  --practice-success: #4ade80;
+  --practice-success-soft: #14301f;
+  --practice-info: #60a5fa;
+  --practice-info-soft: #142238;
+  --practice-warning: #facc15;
+  --practice-warning-soft: #2a2410;
+  --practice-warning-ink: #efd98a;
+  --practice-danger: #f87171;
+  --practice-danger-soft: #2f1618;
+  --practice-kana-font:
+    "Zen Kaku Gothic New", "Noto Sans JP", system-ui, sans-serif;
+  --practice-ui-font:
+    "Inter", "SF Pro Display", system-ui, sans-serif;
+  --practice-display-font:
+    "Inter", "SF Pro Display", system-ui, sans-serif;
+  --practice-kana-weight: 500;
+  --practice-watermark-opacity: 0.1;
 }
 
-@keyframes gradient-shift {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+/* Washi-small radii kept across both themes per design decision. */
+:root,
+.dark {
+  --practice-radius-sm: 4px;
+  --practice-radius: 6px;
+  --practice-radius-lg: 12px;
 }
 
 @layer components {
@@ -86,6 +155,21 @@
       "Segoe UI Symbol",
       "Noto Color Emoji";
     font-weight: 700;
+  }
+
+  .practice-kana {
+    font-family: var(--practice-ui-font);
+    font-weight: var(--practice-kana-weight);
+  }
+
+  .practice-ui {
+    font-family: var(--practice-ui-font);
+  }
+
+  .practice-root {
+    /* background: var(--practice-bg); */
+    color: var(--practice-text);
+    font-family: var(--practice-ui-font);
   }
 
   .kana-page-title {
@@ -115,34 +199,6 @@
   button:disabled {
     cursor: not-allowed;
   }
-}
-
-/* Hero — optional subtle gradient text (Home) */
-.kana-hero-title {
-  background: linear-gradient(
-    90deg,
-    var(--color-primary),
-    #9333ea,
-    var(--color-secondary),
-    var(--color-primary)
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 4s ease infinite;
-}
-
-.kana-hero-title-glow {
-  background: linear-gradient(
-    90deg,
-    var(--color-primary),
-    #9333ea,
-    var(--color-secondary),
-    var(--color-primary)
-  );
-  background-size: 200% 100%;
-  animation: gradient-shift 4s ease infinite;
 }
 
 .kana-details-section summary svg {

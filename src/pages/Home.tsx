@@ -1,7 +1,6 @@
+import type { CSSProperties, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
 
 function GoogleGlyph({ className }: { className?: string }) {
   return (
@@ -32,56 +31,152 @@ export function Home() {
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center py-10">
-      <div className="w-full max-w-md space-y-8 px-3 text-center">
-        <div className="space-y-4">
+      <div className="flex w-full max-w-[420px] flex-col items-stretch gap-7 px-3 text-center">
+        <div className="flex flex-col items-center gap-2.5">
           <button
             type="button"
             onClick={() => navigate("/menu")}
-            className={cn(
-              "group relative cursor-pointer overflow-visible border-none bg-transparent p-0",
-              "text-5xl font-bold leading-none sm:text-6xl"
-            )}
+            className="cursor-pointer border-none bg-transparent p-0"
+            style={{
+              color: "var(--practice-accent)",
+              fontFamily: "var(--practice-ui-font)",
+              fontSize: "clamp(44px, 12vw, 52px)",
+              fontWeight: 700,
+              lineHeight: 1,
+              letterSpacing: "-0.02em",
+            }}
+            aria-label="Start practicing"
           >
-            <span className="kana-hero-title relative z-10 inline-block">
-              KanaReps
-            </span>
-            <span
-              className="kana-hero-title-glow pointer-events-none absolute inset-0 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-30"
-              aria-hidden
-            />
+            KanaReps
           </button>
-          <p className="text-xl text-slate-600 dark:text-slate-400">
+          <p
+            style={{
+              color: "var(--practice-text-secondary)",
+              fontFamily: "var(--practice-ui-font)",
+              fontSize: 18,
+              fontWeight: 500,
+              margin: 0,
+            }}
+          >
             Non-stop kana drills
           </p>
-          <p className="text-sm text-slate-500 dark:text-slate-400 sm:text-base">
+          <p
+            style={{
+              color: "var(--practice-text-tertiary)",
+              fontFamily: "var(--practice-ui-font)",
+              fontSize: 13,
+              lineHeight: 1.5,
+              maxWidth: 320,
+              margin: 0,
+            }}
+          >
             Master Japanese Hiragana and Katakana through interactive practice
           </p>
         </div>
 
-        <div className="space-y-4">
-          <Button
-            className="w-full"
-            size="lg"
-            onClick={() => navigate("/menu")}
-          >
+        <div className="flex flex-col items-stretch gap-2.5">
+          <PrimaryButton onClick={() => navigate("/menu")}>
             Start practicing
-          </Button>
+          </PrimaryButton>
           {!user && !loading && (
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full gap-2 flex items-center justify-center"
-              onClick={() => startGoogleLogin("/menu")}
-            >
-              <GoogleGlyph className="h-5 w-5 shrink-0" />
-              Sign in with Google
-            </Button>
+            <SecondaryButton onClick={() => startGoogleLogin("/menu")}>
+              <GoogleGlyph className="h-[18px] w-[18px] shrink-0" />
+              <span style={{ fontWeight: 600 }}>Sign in with Google</span>
+            </SecondaryButton>
           )}
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p
+            style={{
+              color: "var(--practice-text-tertiary)",
+              fontFamily: "var(--practice-ui-font)",
+              fontSize: 12,
+              margin: "2px 0 0",
+            }}
+          >
             Get 7 days free trial · No credit card required
           </p>
         </div>
       </div>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Buttons — full-width of the narrow content column.
+// ---------------------------------------------------------------------------
+
+function PrimaryButton({
+  onClick,
+  children,
+}: {
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  const style: CSSProperties = {
+    background: "var(--practice-accent)",
+    color: "var(--practice-accent-ink)",
+    padding: "12px 18px",
+    borderRadius: "var(--practice-radius)",
+    border: "none",
+    fontFamily: "var(--practice-ui-font)",
+    fontSize: 15,
+    fontWeight: 600,
+    textAlign: "center",
+    cursor: "pointer",
+    transition: "opacity 120ms ease",
+  };
+  return (
+    <button
+      type="button"
+      style={style}
+      onClick={onClick}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.opacity = "0.9";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.opacity = "1";
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SecondaryButton({
+  onClick,
+  children,
+}: {
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  const style: CSSProperties = {
+    background: "var(--practice-surface)",
+    color: "var(--practice-text)",
+    padding: "11px 18px",
+    borderRadius: "var(--practice-radius)",
+    border: "1px solid var(--practice-stroke)",
+    fontFamily: "var(--practice-ui-font)",
+    fontSize: 14,
+    fontWeight: 500,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    cursor: "pointer",
+    transition: "background-color 120ms ease",
+  };
+  return (
+    <button
+      type="button"
+      style={style}
+      onClick={onClick}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = "var(--practice-hover-tint)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "var(--practice-surface)";
+      }}
+    >
+      {children}
+    </button>
   );
 }

@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import type { KanaRow } from "@/api/types";
 import { reportKanaGuess } from "@/api/client";
-import { Button } from "@/components/ui/Button";
+import {
+  PracticeButton,
+  PracticeHints,
+  PracticeKanaGlyph,
+  PracticePromptCard,
+  PracticeRomajiGlyph,
+} from "@/components/practice/PracticeUI";
 import { useAuth } from "@/context/AuthContext";
 import type { HistoryEntry } from "./types";
 
@@ -58,63 +64,39 @@ export function RomajiToKanaMode({ row, onRoundComplete }: Props) {
 
   return (
     <>
-      <div className="mb-6 flex min-h-[12rem] flex-col items-center justify-center rounded-3xl bg-fuchsia-50/80 py-6 dark:bg-fuchsia-950/25 md:min-h-[14rem] md:py-10">
-        <div className="text-center">
-          <div className="inline-block rounded-2xl bg-indigo-100/70 px-10 py-6 shadow-inner dark:bg-indigo-950/40 md:px-14 md:py-8">
-            <p className="kana-practice-script text-5xl tracking-wide text-indigo-900 dark:text-indigo-100 md:text-6xl lg:text-7xl">
-              {row.romaji}
-            </p>
+      <PracticePromptCard minHeight={200}>
+        <PracticeRomajiGlyph>{row.romaji}</PracticeRomajiGlyph>
+        {revealed && (
+          <div aria-live="polite" className="mt-6">
+            <PracticeKanaGlyph size={72}>{row.char}</PracticeKanaGlyph>
           </div>
-          {revealed && (
-            <p
-              className="kana-practice-script mt-6 text-6xl text-slate-900 dark:text-slate-100 md:text-7xl lg:text-8xl"
-              aria-live="polite"
-            >
-              {row.char}
-            </p>
-          )}
-        </div>
-      </div>
+        )}
+      </PracticePromptCard>
 
       {!revealed ? (
         <>
-          <p className="text-center text-sm text-slate-600">
-            Picture or write the kana, then reveal the answer.
-          </p>
-          <p className="mt-2 text-center text-sm text-slate-500">
-            Press <kbd className="rounded border border-indigo-200 bg-white px-1.5 py-0.5 font-mono text-xs text-indigo-800">Space</kbd>{" "}
-            to reveal
-          </p>
-          <div className="mt-6 flex justify-center">
-            <Button type="button" size="lg" onClick={reveal}>
-              Reveal answer
-            </Button>
+          <div className="flex justify-center">
+            <PracticeButton onClick={reveal}>Reveal answer</PracticeButton>
           </div>
+          <PracticeHints hints={[{ key: "Space", label: "reveal" }]} />
         </>
       ) : (
         <>
-          <p className="text-center text-sm text-slate-600">
-            Were you right?
-          </p>
-          <p className="mt-2 text-center text-sm text-slate-500">
-            <kbd className="rounded border border-indigo-200 bg-white px-1.5 py-0.5 font-mono text-xs text-indigo-800">Y</kbd>{" "}
-            got it ·{" "}
-            <kbd className="rounded border border-indigo-200 bg-white px-1.5 py-0.5 font-mono text-xs text-indigo-800">N</kbd>{" "}
-            missed
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Button type="button" size="lg" onClick={() => complete(true)}>
-              Got it
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              size="lg"
+          <div className="flex flex-wrap justify-center gap-2">
+            <PracticeButton onClick={() => complete(true)}>Got it</PracticeButton>
+            <PracticeButton
+              variant="ghost"
               onClick={() => complete(false)}
             >
               Missed
-            </Button>
+            </PracticeButton>
           </div>
+          <PracticeHints
+            hints={[
+              { key: "Y", label: "got it" },
+              { key: "N", label: "missed" },
+            ]}
+          />
         </>
       )}
     </>

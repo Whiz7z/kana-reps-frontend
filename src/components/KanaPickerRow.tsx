@@ -14,6 +14,8 @@ type Props = {
   onBulkRow: (keys: string[], select: boolean) => void;
   guessStats?: KanaGuessStatsMap;
   rowId: string;
+  /** Short row label rendered on the left (e.g. "a", "k", "s"). */
+  rowLabel?: string;
 };
 
 function cellsStructureEqual(
@@ -46,6 +48,7 @@ function rowSelectionUnchanged(
 
 function pickerRowPropsEqual(prev: Readonly<Props>, next: Readonly<Props>): boolean {
   if (prev.rowId !== next.rowId) return false;
+  if (prev.rowLabel !== next.rowLabel) return false;
   if (prev.cols !== next.cols) return false;
   if (prev.onToggle !== next.onToggle) return false;
   if (prev.onBulkRow !== next.onBulkRow) return false;
@@ -65,6 +68,7 @@ function KanaPickerRowInner({
   onBulkRow,
   guessStats,
   rowId,
+  rowLabel,
 }: Props) {
   const keys = cells
     .filter((c): c is KanaRow => c != null)
@@ -81,29 +85,30 @@ function KanaPickerRowInner({
 
   const gridClass =
     cols === 1
-      ? "grid w-full min-w-0 grid-cols-1 gap-0.5"
+      ? "grid w-full min-w-0 grid-cols-1 gap-1"
       : cols === 3
-        ? "grid w-full min-w-0 grid-cols-3 gap-0.5"
-        : "grid w-full min-w-0 grid-cols-5 gap-0.5";
+        ? "grid w-full min-w-0 grid-cols-3 gap-1"
+        : "grid w-full min-w-0 grid-cols-5 gap-1";
 
   return (
     <div
-      className="flex min-w-0 items-stretch gap-1 border-b border-[color:var(--color-picker-row-border)] py-0.5 last:border-b-0"
+      className="flex min-w-0 items-start gap-1.5 py-1"
       role="row"
     >
-      <label
-        className="flex w-7 shrink-0 cursor-pointer items-center justify-center sm:w-8"
-        title="Select row"
+      <div
+        aria-hidden
+        className="practice-ui flex w-5 shrink-0 items-center justify-end self-start min-h-10 text-right uppercase sm:w-6 sm:min-h-11"
+        style={{
+          color: "var(--practice-text-tertiary)",
+          fontSize: 14,
+          fontWeight: 600,
+          letterSpacing: 0.4,
+          lineHeight: 1,
+        }}
       >
-        <input
-          ref={inputRef}
-          type="checkbox"
-          className="h-3.5 w-3.5 rounded border-slate-300 bg-[var(--color-picker-cell-bg)] text-[var(--color-primary)] focus:ring-[var(--color-ring)]/40 dark:border-slate-500"
-          checked={allOn}
-          onChange={() => onBulkRow(keys, !allOn)}
-          aria-label={`Select row ${rowId}`}
-        />
-      </label>
+        {rowLabel ?? ""}
+      </div>
+
       <div className={cn(gridClass, "min-w-0 flex-1")}>
         {cells.map((cell, i) =>
           cell ? (
@@ -117,12 +122,54 @@ function KanaPickerRowInner({
           ) : (
             <div
               key={`empty-${rowId}-${i}`}
-              className="min-h-[2.25rem] min-w-0 flex-1 rounded-md border border-transparent"
+              className="min-h-10 min-w-0 flex-1 sm:min-h-11"
               aria-hidden
+              style={{
+                border: "1px dashed var(--practice-stroke-subtle)",
+                borderRadius: "var(--practice-radius)",
+              }}
             />
           )
         )}
       </div>
+
+      <label
+        className="flex w-5 shrink-0 cursor-pointer items-center justify-center self-start min-h-10 sm:w-6 sm:min-h-11"
+        title={allOn ? "Clear row" : "Select row"}
+      >
+        <span
+          className="flex items-center justify-center transition"
+          style={{
+            width: 18,
+            height: 18,
+            borderRadius: "var(--practice-radius)",
+            background: allOn ? "var(--practice-accent)" : "transparent",
+            border: `1px solid ${
+              allOn
+                ? "var(--practice-accent)"
+                : "var(--practice-stroke)"
+            }`,
+            color: allOn
+              ? "var(--practice-accent-ink)"
+              : "var(--practice-text-tertiary)",
+            fontFamily: "var(--practice-ui-font)",
+            fontSize: 11,
+            fontWeight: 700,
+            lineHeight: 1,
+          }}
+          aria-hidden
+        >
+          {allOn ? "✓" : someOn ? "–" : ""}
+        </span>
+        <input
+          ref={inputRef}
+          type="checkbox"
+          className="sr-only"
+          checked={allOn}
+          onChange={() => onBulkRow(keys, !allOn)}
+          aria-label={`Select row ${rowLabel ?? rowId}`}
+        />
+      </label>
     </div>
   );
 }

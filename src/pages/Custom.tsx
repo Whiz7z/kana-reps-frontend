@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Feather } from "lucide-react";
-import type { KanaRow } from "@/api/types";
+import { ArrowLeft, Feather, Lock } from "lucide-react";
+import type { KanaRow, PracticeMode } from "@/api/types";
 import {
   ApiRequestError,
   createCheckout,
@@ -12,20 +13,10 @@ import {
 } from "@/api/client";
 import { KanaGrid } from "@/components/KanaGrid";
 import type { KanaGuessStatsMap } from "@/types/kanaGuessStats";
-import { Button } from "@/components/ui/Button";
 import { SubscriptionModal } from "@/components/SubscriptionModal";
 import { savePracticeToSession } from "@/lib/practiceSession";
 import { useAuth } from "@/context/AuthContext";
 import { kanaKey, migrateLegacyKey } from "@/lib/kanaKeys";
-import { pickerStickyToolbar } from "@/lib/customPickerTokens";
-import {
-  cardShellClass,
-  modeInactiveClass,
-  modeKanaToRomajiActiveClass,
-  modeRomajiToKanaActiveClass,
-  modeWritingActiveClass,
-  toolbarPrimaryClass,
-} from "@/lib/modeStyles";
 import { cn } from "@/lib/utils";
 
 const KEY_H = "kanareps:custom:h";
@@ -67,9 +58,7 @@ export function Custom() {
     return t === "katakana" ? "katakana" : "hiragana";
   });
   const [selected, setSelected] = useState(loadInitialSelected);
-  const [mode, setMode] = useState<
-    "kana-to-romaji" | "romaji-to-kana" | "writing"
-  >("kana-to-romaji");
+  const [mode, setMode] = useState<PracticeMode>("kana-to-romaji");
   const [subOpen, setSubOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [guessStats, setGuessStats] = useState<KanaGuessStatsMap>(
@@ -167,17 +156,11 @@ export function Custom() {
   }, []);
 
   const selectAllKana = useCallback(() => {
-    onBulkRow(
-      catalog.map(kanaKey),
-      true
-    );
+    onBulkRow(catalog.map(kanaKey), true);
   }, [catalog, onBulkRow]);
 
   const clearAllKana = useCallback(() => {
-    onBulkRow(
-      catalog.map(kanaKey),
-      false
-    );
+    onBulkRow(catalog.map(kanaKey), false);
   }, [catalog, onBulkRow]);
 
   const customRomaji = useMemo(() => {
@@ -219,9 +202,13 @@ export function Custom() {
   }
 
   const writingOk = user?.entitlements.writing ?? false;
+  const readyCount = customRomaji.length;
 
   return (
-    <div className="w-full pb-28 sm:pb-8">
+    <div
+      className=" mx-auto w-full pb-24 sm:pb-8"
+      style={{ color: "var(--practice-text)" }}
+    >
       <SubscriptionModal
         open={subOpen}
         onClose={() => setSubOpen(false)}
@@ -242,131 +229,145 @@ export function Custom() {
         }}
       />
 
-      <div className="mb-6 flex flex-wrap items-start gap-4">
-        <Button
-          variant="outline"
-          size="icon"
-          className="shrink-0"
-          aria-label="Back to menu"
+      <header className="mb-5 flex items-start gap-3">
+        <button
+          type="button"
           onClick={() => navigate("/menu")}
+          aria-label="Back to menu"
+          className="flex h-10 w-10 shrink-0 items-center justify-center transition hover:opacity-80 self-center"
+          style={{
+            background: "var(--practice-surface)",
+            border: "1px solid var(--practice-stroke)",
+            borderRadius: "var(--practice-radius)",
+            color: "var(--practice-text-secondary)",
+          }}
         >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div>
-          <h1 className="kana-page-title text-3xl font-bold">Custom set</h1>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            {totalSelected} kana selected ({countHiragana} Hiragana,{" "}
-            {countKatakana} Katakana)
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+        </button>
+        <div className="min-w-0 flex-1">
+          <h1
+            className="practice-kana truncate text-2xl font-semibold leading-tight sm:text-3xl"
+            style={{ color: "var(--practice-text)" }}
+          >
+            Custom set
+          </h1>
+          <p
+            className="practice-ui mt-1 text-xs sm:text-sm"
+            style={{ color: "var(--practice-text-secondary)" }}
+          >
+            <span style={{ color: "var(--practice-text)", fontWeight: 600 }}>
+              {totalSelected}
+            </span>{" "}
+            kana selected ·{" "}
+            <span style={{ color: "var(--practice-text)", fontWeight: 600 }}>
+              {countHiragana} Hiragana
+            </span>{" "}
+            ·{" "}
+            <span style={{ color: "var(--practice-text)", fontWeight: 600 }}>
+              {countKatakana} Katakana
+            </span>
           </p>
         </div>
-      </div>
+      </header>
 
-      <div className={cn("mb-6", cardShellClass)}>
-        <h2 className="mb-4 text-base font-semibold text-slate-700 dark:text-slate-200 sm:text-lg">
+      <section
+        className="mb-4 p-3 sm:p-4"
+        style={{
+          background: "var(--practice-surface)",
+          border: "1px solid var(--practice-stroke)",
+          borderRadius: "var(--practice-radius)",
+        }}
+      >
+        <div
+          className="practice-ui mb-2.5 uppercase"
+          style={{
+            color: "var(--practice-text-tertiary)",
+            fontSize: 11,
+            fontWeight: 600,
+            letterSpacing: 1.4,
+          }}
+        >
           Practice mode
-        </h2>
-        <div className="grid grid-cols-2 gap-4">
-          <button
-            type="button"
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <ModeButton
+            active={mode === "kana-to-romaji"}
             onClick={() => setMode("kana-to-romaji")}
-            className={cn(
-              "rounded-2xl px-3 py-2 text-sm font-semibold transition sm:h-16 sm:text-lg",
-              mode === "kana-to-romaji"
-                ? modeKanaToRomajiActiveClass
-                : modeInactiveClass
-            )}
           >
             Kana → Romaji
-          </button>
-          <button
-            type="button"
+          </ModeButton>
+          <ModeButton
+            active={mode === "romaji-to-kana"}
             onClick={() => setMode("romaji-to-kana")}
-            className={cn(
-              "rounded-2xl px-3 py-2 text-sm font-semibold transition sm:h-16 sm:text-lg",
-              mode === "romaji-to-kana"
-                ? modeRomajiToKanaActiveClass
-                : modeInactiveClass
-            )}
           >
             Romaji → Kana
-          </button>
-          <button
-            type="button"
-            disabled={!writingOk}
-            onClick={() => {
-              if (!writingOk) setSubOpen(true);
-              else setMode("writing");
-            }}
-            className={cn(
-              "col-span-2 flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-semibold transition sm:h-16 sm:text-lg",
-              mode === "writing"
-                ? modeWritingActiveClass
-                : modeInactiveClass,
-              !writingOk && "cursor-not-allowed opacity-50"
-            )}
-          >
-            <Feather className="h-4 w-4" />
-            Writing
-          </button>
-        </div>
-      </div>
-
-      {/* <div
-        className={cn(
-          "mb-4 overflow-hidden rounded-2xl sm:rounded-3xl",
-          pickerPageBg
-        )}
-      > */}
-      <div className={pickerStickyToolbar}>
-        <div className="flex w-full flex-wrap items-center justify-center gap-2 lg:max-w-none lg:justify-between px-1">
-          <p className="hidden text-sm text-slate-600 dark:text-slate-400 lg:block">
-            Select kana — tier and row controls for quick selection.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <button
-              type="button"
-              onClick={selectAllKana}
-              className={toolbarPrimaryClass}
+          </ModeButton>
+          <div className="col-span-2">
+            <ModeButton
+              active={mode === "writing"}
+              disabled={!writingOk}
+              onClick={() => {
+                if (!writingOk) setSubOpen(true);
+                else setMode("writing");
+              }}
             >
-              Select all kana
-            </button>
-            <button
-              type="button"
-              onClick={clearAllKana}
-              className="rounded-lg border border-slate-200 bg-[var(--color-paper)] px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-white/10"
-            >
-              Clear all
-            </button>
+              {writingOk ? (
+                <Feather className="h-4 w-4" aria-hidden />
+              ) : (
+                <Lock className="h-3.5 w-3.5" aria-hidden />
+              )}
+              <span>Writing</span>
+            </ModeButton>
           </div>
         </div>
+      </section>
+
+      <div
+        className="sticky top-0 z-30 mb-3 flex items-center gap-2 px-3 py-2 sm:py-2.5"
+        style={{
+          background: "var(--practice-surface)",
+          border: "1px solid var(--practice-stroke)",
+          borderRadius: "var(--practice-radius)",
+        }}
+      >
+        <p
+          className="practice-ui hidden min-w-0 flex-1 truncate sm:block"
+          style={{
+            color: "var(--practice-text-secondary)",
+            fontSize: 12,
+          }}
+        >
+          Tier and row controls for quick selection
+        </p>
+        <div className="flex flex-1 items-center justify-center gap-2 sm:flex-none sm:justify-end">
+          <ToolbarButton primary onClick={selectAllKana}>
+            Select all
+          </ToolbarButton>
+          <ToolbarButton onClick={clearAllKana}>Clear</ToolbarButton>
+        </div>
       </div>
 
-      <div className="mb-4 lg:hidden">
-        <div className="flex rounded-2xl bg-slate-100/90 p-1 ring-1 ring-indigo-100/60 dark:bg-slate-800/90 dark:ring-white/10">
-          <button
-            type="button"
+      <div className="mb-3 lg:hidden">
+        <div
+          className="flex p-1"
+          style={{
+            background: "var(--practice-surface-elev)",
+            border: "1px solid var(--practice-stroke)",
+            borderRadius: "var(--practice-radius)",
+          }}
+        >
+          <TabButton
+            active={tab === "hiragana"}
             onClick={() => setTab("hiragana")}
-            className={cn(
-              "flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition",
-              tab === "hiragana"
-                ? "bg-[var(--color-paper)] text-indigo-900 shadow-sm ring-1 ring-indigo-100 dark:text-slate-100 dark:ring-white/15"
-                : "text-slate-600 dark:text-slate-400"
-            )}
           >
             Hiragana ({countHiragana})
-          </button>
-          <button
-            type="button"
+          </TabButton>
+          <TabButton
+            active={tab === "katakana"}
             onClick={() => setTab("katakana")}
-            className={cn(
-              "flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition",
-              tab === "katakana"
-                ? "bg-[var(--color-paper)] text-indigo-900 shadow-sm ring-1 ring-indigo-100 dark:text-slate-100 dark:ring-white/15"
-                : "text-slate-600 dark:text-slate-400"
-            )}
           >
             Katakana ({countKatakana})
-          </button>
+          </TabButton>
         </div>
       </div>
 
@@ -381,16 +382,171 @@ export function Custom() {
         />
       )}
 
-      <div className="fixed bottom-0 left-0 right-0 z-[100] w-full border-t border-slate-200 bg-[var(--color-paper)]/95 p-3 shadow-[0_-4px_24px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-slate-700 sm:p-6">
-        <Button
-          className="w-full text-white sm:min-h-[3.5rem]"
-          size="lg"
-          disabled={busy || customRomaji.length === 0}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-100 flex items-center gap-3 p-3 sm:p-4"
+        style={{
+          background: "var(--practice-surface)",
+          borderTop: "1px solid var(--practice-stroke)",
+        }}
+      >
+        <div
+          className="practice-ui min-w-0 flex-1"
+          style={{
+            color: "var(--practice-text-secondary)",
+            fontSize: 13,
+          }}
+        >
+          <span style={{ color: "var(--practice-text)", fontWeight: 600 }}>
+            {readyCount}
+          </span>{" "}
+          kana ready
+        </div>
+        <button
+          type="button"
           onClick={() => void start()}
+          disabled={busy || readyCount === 0}
+          className="practice-ui transition disabled:cursor-not-allowed disabled:opacity-40"
+          style={{
+            background: "var(--practice-accent)",
+            color: "var(--practice-accent-ink)",
+            border: "1px solid var(--practice-accent)",
+            borderRadius: "var(--practice-radius)",
+            padding: "10px 20px",
+            fontSize: 14,
+            fontWeight: 700,
+            letterSpacing: 0.2,
+          }}
         >
           Start practice
-        </Button>
+        </button>
       </div>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Local UI helpers — mirror the flat Washi / Dark language used elsewhere.
+// ---------------------------------------------------------------------------
+
+function ModeButton({
+  active,
+  disabled,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  const base: CSSProperties = {
+    borderRadius: "var(--practice-radius)",
+    padding: "10px 12px",
+    fontSize: 13,
+    fontWeight: 600,
+    letterSpacing: 0.2,
+    width: "100%",
+    textAlign: "center",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  };
+  const tone: CSSProperties = active
+    ? {
+        background: "var(--practice-accent)",
+        color: "var(--practice-accent-ink)",
+        border: "1px solid var(--practice-accent)",
+      }
+    : {
+        background: "var(--practice-surface-elev)",
+        color: "var(--practice-text-secondary)",
+        border: "1px solid var(--practice-stroke)",
+      };
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "practice-ui transition disabled:cursor-not-allowed disabled:opacity-50"
+      )}
+      style={{ ...base, ...tone }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function ToolbarButton({
+  primary,
+  onClick,
+  children,
+}: {
+  primary?: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  const tone: CSSProperties = primary
+    ? {
+        background: "var(--practice-accent)",
+        color: "var(--practice-accent-ink)",
+        border: "1px solid var(--practice-accent)",
+      }
+    : {
+        background: "var(--practice-surface-elev)",
+        color: "var(--practice-text-secondary)",
+        border: "1px solid var(--practice-stroke)",
+      };
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="practice-ui transition"
+      style={{
+        ...tone,
+        borderRadius: "var(--practice-radius)",
+        padding: "6px 12px",
+        fontSize: 12,
+        fontWeight: 600,
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="practice-ui flex-1 transition"
+      style={{
+        background: active
+          ? "var(--practice-surface)"
+          : "transparent",
+        color: active
+          ? "var(--practice-text)"
+          : "var(--practice-text-secondary)",
+        border: active
+          ? "1px solid var(--practice-stroke)"
+          : "1px solid transparent",
+        borderRadius: "var(--practice-radius)",
+        padding: "8px 12px",
+        fontSize: 13,
+        fontWeight: 600,
+      }}
+    >
+      {children}
+    </button>
   );
 }

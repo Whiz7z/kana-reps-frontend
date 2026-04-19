@@ -5,9 +5,11 @@ import { KanaTierAccordion } from "@/components/KanaTierAccordion";
 import { kanaKey } from "@/lib/kanaKeys";
 import { cellKana } from "@/lib/gojuon";
 import { consonantRowsFromGojuon } from "@/lib/mobileKanaLayout";
-import { YOON_MATRIX, YOON_ROW_LABELS } from "@/lib/extraKanaLayout";
-import { pickerColumnTitle, pickerPanelBg, pickerPanelBorder } from "@/lib/customPickerTokens";
-import { cn } from "@/lib/utils";
+import {
+  DAKUTEN_HAND_ROW_LABELS,
+  YOON_MATRIX,
+  YOON_ROW_LABELS,
+} from "@/lib/extraKanaLayout";
 
 type Props = {
   script: "hiragana" | "katakana";
@@ -45,6 +47,12 @@ function dakutenCellAt(
   return handakutenItems[ci];
 }
 
+/** The gojūon emits "∅" for the pure-vowel row; prefer "a" for display. */
+function displayRowLabel(raw: string): string {
+  if (raw === "∅") return "a";
+  return raw;
+}
+
 function ScriptColumn({
   script,
   catalog,
@@ -76,17 +84,11 @@ function ScriptColumn({
 
   return (
     <div
-      className={cn(
-        "flex min-w-0 flex-col gap-1 rounded-xl ",
-        pickerPanelBg,
-        pickerPanelBorder
-      )}
+      className="flex min-w-0 flex-col gap-2"
     >
       <h3
-        className={cn(
-          pickerColumnTitle,
-          "mb-0.5 text-center text-base sm:text-lg lg:text-left"
-        )}
+        className="practice-kana truncate text-base font-semibold sm:text-lg"
+        style={{ color: "var(--practice-text)" }}
       >
         {script === "hiragana" ? "Hiragana ひらがな" : "Katakana カタカナ"}
       </h3>
@@ -108,6 +110,7 @@ function ScriptColumn({
                 <KanaPickerRow
                   key={def.label}
                   rowId={`basic-${script}-${def.label}`}
+                  rowLabel={displayRowLabel(def.label)}
                   cells={cells}
                   cols={5}
                   selected={selected}
@@ -120,6 +123,7 @@ function ScriptColumn({
             {nRowDef && (
               <KanaPickerRow
                 rowId={`basic-${script}-n`}
+                rowLabel="ん"
                 cells={nRowDef.cells.map((rk) =>
                   rk ? (cellKana(basicItems, script, rk) ?? null) : null
                 )}
@@ -153,6 +157,7 @@ function ScriptColumn({
                 <KanaPickerRow
                   key={`dak-${script}-${ri}`}
                   rowId={`dakuten-${script}-${ri}`}
+                  rowLabel={DAKUTEN_HAND_ROW_LABELS[ri] ?? ""}
                   cells={cells}
                   cols={5}
                   selected={selected}
@@ -168,7 +173,7 @@ function ScriptColumn({
 
       {yoonItems.length > 0 && (
         <KanaTierAccordion
-          title="Yoon"
+          title="Yōon"
           tierKeys={tierYoonKeys}
           selected={selected}
           onBulkRow={onBulkRow}
@@ -185,6 +190,7 @@ function ScriptColumn({
                 <KanaPickerRow
                   key={`yoon-${script}-${label}`}
                   rowId={`yoon-${script}-${label}`}
+                  rowLabel={label}
                   cells={cells}
                   cols={3}
                   selected={selected}

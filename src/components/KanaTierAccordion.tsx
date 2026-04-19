@@ -1,7 +1,5 @@
 import { memo } from "react";
-import { ChevronDown } from "lucide-react";
 import type { KanaGuessStatsMap } from "@/types/kanaGuessStats";
-import { cn } from "@/lib/utils";
 
 type Props = {
   title: string;
@@ -58,8 +56,12 @@ function KanaTierAccordionInner({
   onBulkRow,
   children,
 }: Props) {
-  const allOn =
-    tierKeys.length > 0 && tierKeys.every((k) => selected.has(k));
+  const tierTotal = tierKeys.length;
+  const tierDone = tierKeys.reduce(
+    (n, k) => (selected.has(k) ? n + 1 : n),
+    0
+  );
+  const allOn = tierTotal > 0 && tierDone === tierTotal;
 
   function tierToggle() {
     onBulkRow(tierKeys, !allOn);
@@ -68,16 +70,46 @@ function KanaTierAccordionInner({
   return (
     <details
       open={defaultOpen}
-      className="group overflow-hidden rounded-lg border border-indigo-100/70 bg-[var(--color-paper)] dark:border-white/10"
+      className="group overflow-hidden"
+      style={{
+        background: "var(--practice-surface-elev)",
+        border: "1px solid var(--practice-stroke-subtle)",
+        borderRadius: "var(--practice-radius)",
+      }}
     >
       <summary
-        className={cn(
-          "flex cursor-pointer list-none items-center gap-2 border-b border-indigo-100/50 bg-indigo-50/40 px-2 py-1.5 text-left text-xs font-semibold text-indigo-900 sm:text-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-100",
-          "[&::-webkit-details-marker]:hidden"
-        )}
+        className="practice-ui flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-left [&::-webkit-details-marker]:hidden"
+        style={{
+          background: "var(--practice-surface)",
+          borderBottom: "1px solid var(--practice-stroke-subtle)",
+          color: "var(--practice-text)",
+          fontSize: 13,
+          fontWeight: 600,
+        }}
       >
-        <ChevronDown className="h-3.5 w-3.5 shrink-0 text-indigo-500 transition-transform duration-200 group-open:rotate-180" />
+        <span
+          aria-hidden
+          className="inline-block text-center transition-transform duration-200 group-open:rotate-90"
+          style={{
+            color: "var(--practice-accent)",
+            fontSize: 11,
+            width: 10,
+            lineHeight: 1,
+          }}
+        >
+          ›
+        </span>
         <span className="min-w-0 flex-1 truncate">{title}</span>
+        <span
+          className="practice-ui tabular-nums"
+          style={{
+            color: "var(--practice-text-tertiary)",
+            fontSize: 11,
+            letterSpacing: 0.2,
+          }}
+        >
+          {tierDone} / {tierTotal}
+        </span>
         <button
           type="button"
           onClick={(e) => {
@@ -85,21 +117,31 @@ function KanaTierAccordionInner({
             e.stopPropagation();
             tierToggle();
           }}
-          className={cn(
-            "shrink-0 rounded px-2 py-0.5 text-[10px] font-semibold sm:text-xs",
-            allOn
-              ? "border border-slate-200 bg-[var(--color-paper)] text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
-              : "bg-[var(--color-primary)] text-white shadow-sm shadow-violet-500/20 hover:bg-[var(--color-primary-hover)] dark:shadow-violet-900/40"
-          )}
+          className="practice-ui shrink-0 transition"
+          style={{
+            background: allOn
+              ? "var(--practice-surface-elev)"
+              : "var(--practice-accent)",
+            color: allOn
+              ? "var(--practice-text-secondary)"
+              : "var(--practice-accent-ink)",
+            border: `1px solid ${
+              allOn ? "var(--practice-stroke)" : "var(--practice-accent)"
+            }`,
+            borderRadius: "var(--practice-radius)",
+            padding: "2px 8px",
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: 0.5,
+            textTransform: "uppercase",
+          }}
           aria-pressed={allOn}
           title={allOn ? "Deselect all in section" : "Select all in section"}
         >
           {allOn ? "Clear" : "All"}
         </button>
       </summary>
-      <div className="bg-[var(--color-background)]/50 px-1 py-0.5 dark:bg-black/20">
-        {children}
-      </div>
+      <div className="px-2 py-1 sm:px-2.5 sm:py-1.5">{children}</div>
     </details>
   );
 }

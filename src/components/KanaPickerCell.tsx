@@ -1,3 +1,5 @@
+import { useState } from "react";
+import type { CSSProperties } from "react";
 import type { KanaRow } from "@/api/types";
 import type { KanaGuessStatsMap } from "@/types/kanaGuessStats";
 import { kanaKey } from "@/lib/kanaKeys";
@@ -10,11 +12,32 @@ type Props = {
   guessStats?: KanaGuessStatsMap;
 };
 
+/**
+ * Picker cell — flat Washi / Modern Dark look driven by --practice-* tokens.
+ * Selected state fills with the accent colour (no glow / shadow). A practiced
+ * cell shows a 2px accuracy bar and a single "% / counts" glanceable token
+ * that swaps between percentage and raw ✓/✗ counts on hover.
+ */
 export function KanaPickerCell({ row, selected, onToggle, guessStats }: Props) {
   const st = guessStats?.get(kanaKey(row));
-  const total =
-    st && st.correct + st.wrong > 0 ? st.correct + st.wrong : 0;
-  const pct = total > 0 && st ? Math.round((st.correct / total) * 100) : 0;
+  const total = st ? st.correct + st.wrong : 0;
+  const hasStats = total > 0 && !!st;
+  const pct = hasStats ? Math.round((st!.correct / total) * 100) : 0;
+  const correctPct = hasStats ? (st!.correct / total) * 100 : 0;
+
+  const [statsHover, setStatsHover] = useState(false);
+
+  const buttonStyle: CSSProperties = selected
+    ? {
+        background: "var(--practice-accent)",
+        color: "var(--practice-accent-ink)",
+        border: "1px solid var(--practice-accent)",
+      }
+    : {
+        background: "var(--practice-surface-elev)",
+        color: "var(--practice-text)",
+        border: "1px solid var(--practice-stroke)",
+      };
 
   return (
     <div className="flex min-w-0 flex-1 flex-col items-stretch gap-1">
@@ -23,69 +46,91 @@ export function KanaPickerCell({ row, selected, onToggle, guessStats }: Props) {
         onClick={onToggle}
         aria-pressed={selected}
         className={cn(
-          "flex min-h-[2.25rem] min-w-0 flex-col items-center justify-center rounded-md border px-0.5 py-0.5 text-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]",
-          "text-[clamp(0.65rem,2.8vw,0.95rem)] leading-none tabular-nums",
-          selected
-            ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-[0_0_16px_rgba(109,40,217,0.35)] shadow-lg shadow-violet-500/25 ring-1 ring-[var(--color-primary)]/50 dark:shadow-[0_0_16px_rgba(167,139,250,0.35)] dark:shadow-violet-900/40"
-            : cn(
-                "border-[color:var(--color-picker-cell-border)] bg-[var(--color-picker-cell-bg)] text-[color:var(--color-picker-cell-text)]",
-                "hover:border-[color:var(--color-picker-cell-hover-border)] hover:bg-[var(--color-picker-cell-hover-bg)]"
-              )
+          "practice-ui flex min-h-10 min-w-0 flex-col items-center justify-center px-0.5 py-1 text-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) sm:min-h-11",
+          !selected && "hover:border-(--practice-accent)"
         )}
+        style={{
+          ...buttonStyle,
+          borderRadius: "var(--practice-radius)",
+          lineHeight: 1,
+        }}
       >
         <span
-          className={cn(
-            "font-medium",
-            selected ? "text-white" : "text-[color:var(--color-picker-cell-text)]"
-          )}
+          className="practice-kana font-medium"
+          style={{
+            fontSize: "clamp(0.95rem, 3.2vw, 1.25rem)",
+          }}
         >
           {row.char}
         </span>
         <span
-          className={cn(
-            "mt-0.5 max-w-full truncate text-[9px] tracking-wide sm:text-[10px]",
-            selected
-              ? "text-white/90"
-              : "text-[color:var(--color-picker-cell-text-muted)]"
-          )}
+          className="mt-0.5 max-w-full truncate tracking-wide"
+          style={{
+            fontSize: "clamp(0.55rem, 1.5vw, 0.65rem)",
+            fontWeight: 500,
+            letterSpacing: 0.3,
+            opacity: selected ? 0.9 : 0.7,
+          }}
         >
           {row.romaji}
         </span>
       </button>
-      {total > 0 && st && (
+
+      {hasStats && st && (
         <div
-          className="flex w-full flex-col items-center gap-0.5 px-0.5"
-          title={`${st.correct} correct / ${st.wrong} wrong (${total} total, ${pct}% accuracy)`}
+          className="flex w-full flex-col gap-0.5 px-0.5"
+          onMouseEnter={() => setStatsHover(true)}
+          onMouseLeave={() => setStatsHover(false)}
+          onFocus={() => setStatsHover(true)}
+          onBlur={() => setStatsHover(false)}
+          title={`${st.correct} correct · ${st.wrong} wrong · ${pct}% accuracy`}
         >
           <div
-            className="flex h-1 w-full overflow-hidden rounded-full bg-slate-200/70 dark:bg-slate-600/60"
+            className="flex h-[2px] w-full overflow-hidden"
+            style={{
+              background: "var(--practice-stroke-subtle)",
+              borderRadius: 1,
+            }}
             aria-hidden
           >
             <div
-              className="h-full shrink-0 bg-emerald-400/70 dark:bg-emerald-500/60"
-              style={{ width: `${(st.correct / total) * 100}%` }}
+              className="h-full shrink-0"
+              style={{
+                width: `${correctPct}%`,
+                background: "var(--practice-success)",
+              }}
             />
             <div
-              className="h-full shrink-0 bg-rose-400/70 dark:bg-rose-500/60"
-              style={{ width: `${(st.wrong / total) * 100}%` }}
+              className="h-full shrink-0"
+              style={{
+                width: `${100 - correctPct}%`,
+                background: "var(--practice-danger)",
+              }}
             />
           </div>
-          <div className="flex w-full items-center justify-center gap-1 text-[8px] font-medium leading-none tabular-nums sm:text-[9px]">
-            <span className="text-[color:var(--color-picker-cell-text-muted)]">
-              {pct}%
-            </span>
-            <span
-              className="text-emerald-600 dark:text-emerald-400"
-              aria-label={`${st.correct} correct`}
-            >
-              ✓{st.correct}
-            </span>
-            <span
-              className="text-rose-600 dark:text-rose-400"
-              aria-label={`${st.wrong} wrong`}
-            >
-              ✗{st.wrong}
-            </span>
+          <div
+            className="practice-ui flex min-h-[0.85rem] w-full items-center justify-center gap-1.5 tabular-nums"
+            style={{
+              color: "var(--practice-text-tertiary)",
+              fontSize: "clamp(0.55rem, 1.4vw, 0.65rem)",
+              letterSpacing: 0.3,
+              lineHeight: 1,
+            }}
+            aria-label={`${st.correct} correct, ${st.wrong} wrong, ${pct}% accuracy`}
+          >
+            {statsHover ? (
+              <>
+                <span style={{ color: "var(--practice-success)" }}>
+                  ✓{st.correct}
+                </span>
+                <span style={{ color: "var(--practice-text-tertiary)" }}>·</span>
+                <span style={{ color: "var(--practice-danger)" }}>
+                  ✗{st.wrong}
+                </span>
+              </>
+            ) : (
+              <span>{pct}%</span>
+            )}
           </div>
         </div>
       )}
