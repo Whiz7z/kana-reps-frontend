@@ -521,7 +521,7 @@ export function Words() {
           </div>
         </div>
 
-        {customsActive && (
+        {/* {customsActive && (
           <p
             className="practice-ui mb-3"
             style={{
@@ -532,7 +532,7 @@ export function Words() {
           >
             Custom list overrides category filters.
           </p>
-        )}
+        )} */}
 
         {categoriesLoading ? (
           <div
