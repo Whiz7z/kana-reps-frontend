@@ -126,11 +126,9 @@ export function PracticeChip({ children }: { children: ReactNode }) {
 export function PracticePromptCard({
   children,
   minHeight = 160,
-  showAccentMark = true,
 }: {
   children: ReactNode;
   minHeight?: number;
-  showAccentMark?: boolean;
 }) {
   return (
     <div
