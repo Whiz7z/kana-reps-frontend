@@ -191,6 +191,25 @@ export function WritingMode({ row, onAppendHistory, onAdvance }: Props) {
     };
   }, [showHint, row.char, row.kana_type]);
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Spacebar" || e.key === " ") {
+        e.preventDefault();
+        handleReveal();
+        return true;
+      }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleRecognize();
+        return true;
+      }
+
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+
+  }, []);
+
   const handleRecognize = () => {
     hwRef.current?.recognize();
     setRecognizing(true);
