@@ -109,10 +109,10 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
         hints={
           hasMeaning
             ? [
-                { key: "Enter", label: "check" },
+                { key: "Space", label: "check" },
                 { key: "Tab", label: peek ? "hide English" : "peek English" },
               ]
-            : [{ key: "Enter", label: "check" }]
+            : [{ key: "Space", label: "check" }]
         }
       />
     </>

@@ -242,7 +242,7 @@ export function PracticeTextInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === "Spacebar" || e.key === " ") {
             e.preventDefault();
             onSubmit();
             return;
