@@ -63,7 +63,7 @@ export function Practice() {
   if (!payload || !row) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-indigo-900 dark:text-indigo-100">
-        <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[--color-primary]" />
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Loading practice…
         </p>
