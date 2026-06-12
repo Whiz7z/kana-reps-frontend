@@ -6,6 +6,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KanaReps</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XY23P13Q04"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-XY23P13Q04');
+  </script>
   <script>
     (function () {
       try {
@@ -15,41 +24,12 @@
         if (t !== "light") {
           document.documentElement.classList.add("dark");
         }
-      } catch (e) {}
+      } catch (e) { }
     })();
   </script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XY23P13Q04"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { dataLayer.push(arguments); }
-  gtag('js', new Date());
-
-  gtag('config', 'G-XY23P13Q04');
-</script>
 
 
 
-  <!-- Event snippet for Stripe Subscription conversion page
-  In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
-  <script>
-    function gtag_report_conversion(url, transactionId) {
-      var callback = function () {
-        if (typeof (url) != 'undefined') {
-          window.location = url;
-        }
-      };
-      gtag('event', 'conversion', {
-        'send_to': 'AW-16714584801/v251CMf8-ZEcEOGlkaI-',
-        'value': 4.99,
-        'currency': 'GBP',
-        'transaction_id': typeof transactionId === "string" && transactionId !== "" ? transactionId : "",
-        'event_callback': callback
-        // 'new_customer': true /* calculate dynamically, populate with true/false */,
-      });
-      return false;
-    }
-  </script>
 
 
 </head>
