@@ -102,7 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (verified) {
             console.log("verified", sid);
             //window.gtag_report_conversion!(undefined, sid);
-            window.gtag?.("event", "lifetime_purchase", {
+            // @ts-ignore
+            gtag("event", "lifetime_purchase", {
               transaction_id: sid,
               value: 3.99,
               currency: "USD",
