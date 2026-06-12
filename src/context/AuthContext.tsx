@@ -101,7 +101,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           if (verified) {
             console.log("verified", sid);
-            window.gtag_report_conversion!(undefined, sid);
+            //window.gtag_report_conversion!(undefined, sid);
+            window.gtag?.("event", "purchase", {
+              transaction_id: sid,
+              value: 3.99,
+              currency: "GBP",
+              items: [
+                {
+                  item_id: "lifetime_access",
+                  item_name: "Lifetime Access",
+                  price: 3.99,
+                  quantity: 1,
+                },
+              ],
+            });
           } else if (import.meta.env.DEV) {
             console.warn(
               "[gads] Session not verified — no conversion (expected mode=payment + payment_status=paid, customer match, correct API URL)"
