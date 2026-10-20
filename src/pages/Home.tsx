@@ -92,7 +92,7 @@ export function Home() {
               margin: "2px 0 0",
             }}
           >
-            Get 7 days free trial · No credit card required
+            Get 3 days free trial · No credit card required
           </p>
         </div>
       </div>

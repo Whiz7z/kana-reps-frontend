@@ -186,7 +186,7 @@ export default function HomeScreenRedesign() {
           <Text size="small" tone="secondary">
             One filled button, full-width of the narrow content column
             (max-width ~420px). Secondary Google sign-in only appears for
-            guests, with a glyph to anchor provider recognition. The "7 days
+            guests, with a glyph to anchor provider recognition. The "3 days
             free trial" microcopy sits below, muted, acting as a guarantee
             line — not a second CTA.
           </Text>
@@ -352,7 +352,7 @@ function HomeMock({
                 marginTop: 2,
               }}
             >
-              Get 7 days free trial · No credit card required
+              Get 3 days free trial · No credit card required
             </div>
           </div>
         </div>

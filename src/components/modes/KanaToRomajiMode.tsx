@@ -29,12 +29,20 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
   }, [row.char, row.romaji]);
 
   const checkAnswer = useCallback(() => {
+    console.log("checkAnswer", input, row.romaji);
     const ok = isWord
       ? normRomajiLenient(input) === normRomajiLenient(row.romaji)
       : normRomaji(input) === normRomaji(row.romaji);
     if (!isWord) {
       reportKanaGuess(row, ok, Boolean(user));
     }
+
+    console.log("onRoundComplete", {
+      prompt: row.char,
+      answer: ok ? input.trim() || row.romaji : row.romaji,
+      ok,
+      meaning: isWord ? row.meaning : undefined,
+    });
     onRoundComplete({
       prompt: row.char,
       answer: ok ? input.trim() || row.romaji : row.romaji,
@@ -109,7 +117,7 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
         hints={
           hasMeaning
             ? [
-                { key: "Space", label: "check" },
+                { key: "Enter", label: "check" },
                 { key: "Tab", label: peek ? "hide English" : "peek English" },
               ]
             : [{ key: "Space", label: "check" }]

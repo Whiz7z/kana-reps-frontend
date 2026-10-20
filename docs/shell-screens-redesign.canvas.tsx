@@ -647,7 +647,7 @@ function LandingMock({
             marginTop: 4,
           }}
         >
-          Get 7 days free trial · No credit card required
+          Get 3 days free trial · No credit card required
         </div>
       </div>
     </div>

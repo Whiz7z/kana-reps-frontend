@@ -92,9 +92,9 @@ export function PracticeHeader({
         </div>
       </div>
 
-      <PracticeChip>
+      {/* <PracticeChip>
         {step} / {total}
-      </PracticeChip>
+      </PracticeChip> */}
     </div>
   );
 }
@@ -242,7 +242,7 @@ export function PracticeTextInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Spacebar" || e.key === " " || e.key === "Enter") {
+          if (e.key === "Enter") {
             e.preventDefault();
             onSubmit();
             return;
