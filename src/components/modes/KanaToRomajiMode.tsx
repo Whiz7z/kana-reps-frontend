@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { KanaRow } from "@/api/types";
 import { reportKanaGuess } from "@/api/client";
 import {
@@ -8,7 +8,9 @@ import {
   PracticePromptCard,
   PracticeTextInput,
 } from "@/components/practice/PracticeUI";
+import { RomajiKeyboard } from "@/components/practice/RomajiKeyboard";
 import { useAuth } from "@/context/AuthContext";
+import { useIsTouchPrimary } from "@/hooks/useIsTouchPrimary";
 import type { HistoryEntry } from "./types";
 import { normRomaji, normRomajiLenient } from "./utils";
 
@@ -22,6 +24,51 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
   const { user } = useAuth();
   const [input, setInput] = useState("");
   const [peek, setPeek] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isTouch = useIsTouchPrimary();
+
+  // Edits not yet rendered to the DOM, so rapid taps within one frame chain correctly.
+  const pendingEdit = useRef<{ value: string; caret: number } | null>(null);
+
+  const editAtCaret = useCallback(
+    (edit: (value: string, start: number, end: number) => [string, number]) => {
+      const el = inputRef.current;
+      if (!el) return;
+      const pending = pendingEdit.current;
+      const value = pending?.value ?? el.value;
+      const start = pending?.caret ?? el.selectionStart ?? value.length;
+      const end = pending?.caret ?? el.selectionEnd ?? start;
+      const [next, caret] = edit(value, start, end);
+      const entry = { value: next, caret };
+      pendingEdit.current = entry;
+      setInput(next);
+      requestAnimationFrame(() => {
+        if (pendingEdit.current === entry) pendingEdit.current = null;
+        el.focus({ preventScroll: true });
+        el.setSelectionRange(caret, caret);
+      });
+    },
+    []
+  );
+
+  const typeLetter = useCallback(
+    (letter: string) =>
+      editAtCaret((v, start, end) => [
+        v.slice(0, start) + letter + v.slice(end),
+        start + letter.length,
+      ]),
+    [editAtCaret]
+  );
+
+  const backspace = useCallback(
+    () =>
+      editAtCaret((v, start, end) => {
+        if (start !== end) return [v.slice(0, start) + v.slice(end), start];
+        if (start === 0) return [v, 0];
+        return [v.slice(0, start - 1) + v.slice(start), start - 1];
+      }),
+    [editAtCaret]
+  );
 
   useEffect(() => {
     setInput("");
@@ -89,6 +136,7 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
         }}
         placeholder="Type romaji…"
         submitLabel="Check"
+        inputRef={inputRef}
         inputProps={{
           "aria-label": "Answer",
           id: "answer-kana-to-romaji",
@@ -96,7 +144,16 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
           autoCorrect: "off",
           autoCapitalize: "off",
           spellCheck: false,
+          enterKeyHint: "done",
+          // The on-screen keyboard replaces the native one on touch devices.
+          inputMode: isTouch ? "none" : "text",
         }}
+      />
+
+      <RomajiKeyboard
+        onKey={typeLetter}
+        onBackspace={backspace}
+        showSpace={isWord}
       />
 
       {hasMeaning && (
@@ -113,16 +170,18 @@ export function KanaToRomajiMode({ row, onRoundComplete, isWord }: Props) {
         </div>
       )}
 
-      <PracticeHints
-        hints={
-          hasMeaning
-            ? [
-                { key: "Enter", label: "check" },
-                { key: "Tab", label: peek ? "hide English" : "peek English" },
-              ]
-            : [{ key: "Space", label: "check" }]
-        }
-      />
+      {!isTouch && (
+        <PracticeHints
+          hints={
+            hasMeaning
+              ? [
+                  { key: "Enter", label: "check" },
+                  { key: "Tab", label: peek ? "hide English" : "peek English" },
+                ]
+              : [{ key: "Space", label: "check" }]
+          }
+        />
+      )}
     </>
   );
 }

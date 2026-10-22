@@ -3,6 +3,7 @@ import type {
   InputHTMLAttributes,
   KeyboardEvent,
   ReactNode,
+  Ref,
 } from "react";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -214,6 +215,7 @@ type PracticeTextInputProps = {
   submitLabel?: string;
   autoFocus?: boolean;
   inputProps?: InputHTMLAttributes<HTMLInputElement>;
+  inputRef?: Ref<HTMLInputElement>;
 };
 
 export function PracticeTextInput({
@@ -225,6 +227,7 @@ export function PracticeTextInput({
   submitLabel = "Check",
   autoFocus = true,
   inputProps,
+  inputRef,
 }: PracticeTextInputProps) {
   return (
     <div
@@ -238,6 +241,7 @@ export function PracticeTextInput({
     >
       <input
         {...inputProps}
+        ref={inputRef}
         autoFocus={autoFocus}
         value={value}
         onChange={(e) => onChange(e.target.value)}

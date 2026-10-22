@@ -172,6 +172,99 @@
     font-family: var(--practice-ui-font);
   }
 
+  /* On-screen QWERTY keyboard. Every key is 1/10 of the row width so the
+     real-keyboard stagger is preserved at any screen size. */
+  .practice-keyboard {
+    --kb-gap: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--kb-gap) + 2px);
+    width: 100%;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .practice-keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: var(--kb-gap);
+  }
+
+  .practice-key {
+    --kb-units: 1;
+    flex: 0 0 auto;
+    width: calc(
+      (100% - 9 * var(--kb-gap)) / 10 * var(--kb-units) +
+        (var(--kb-units) - 1) * var(--kb-gap)
+    );
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-family: var(--practice-ui-font);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--practice-text-secondary);
+    background: var(--practice-surface-elev);
+    border: 1px solid var(--practice-stroke);
+    border-radius: 5px;
+    transition:
+      background-color 80ms ease,
+      border-color 80ms ease,
+      color 80ms ease;
+  }
+
+  .practice-key--wide {
+    --kb-units: 1.5;
+  }
+
+  .practice-key--space {
+    --kb-units: 5;
+    font-size: 0.8em;
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: 0.08em;
+  }
+
+  @media (hover: hover) {
+    .practice-key:not(:disabled):hover {
+      background: var(--practice-hover-tint);
+    }
+  }
+
+  .practice-key:not(:disabled):active,
+  .practice-key[data-pressed="true"] {
+    background: var(--practice-accent-soft);
+    border-color: var(--practice-accent);
+    color: var(--practice-accent);
+  }
+
+  .practice-key:focus-visible {
+    outline: 2px solid var(--practice-accent);
+    outline-offset: 1px;
+  }
+
+  .practice-key:disabled {
+    opacity: 0.35;
+  }
+
+  @media (min-width: 640px) {
+    .practice-keyboard {
+      --kb-gap: 6px;
+    }
+
+    .practice-key {
+      height: 42px;
+      font-size: 14px;
+      border-radius: var(--practice-radius);
+    }
+  }
+
   .kana-page-title {
     color: var(--color-primary);
   }
