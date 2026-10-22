@@ -51,8 +51,6 @@ export function PracticeRoot({
 export function PracticeHeader({
   title,
   subtitle,
-  step,
-  total,
   onBack,
 }: {
   title: string;
