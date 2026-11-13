@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /menu
+Disallow: /custom
+Disallow: /words
+Disallow: /practice
+Disallow: /profile
+Disallow: /admin
+
+Sitemap: https://app.kanareps.com/sitemap.xml

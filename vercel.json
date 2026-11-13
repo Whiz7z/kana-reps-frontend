@@ -1,3 +1,11 @@
 {
+  "headers": [
+    {
+      "source": "/:path(menu|custom|words|practice|profile|admin)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    }
+  ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

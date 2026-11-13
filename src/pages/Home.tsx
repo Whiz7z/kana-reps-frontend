@@ -33,22 +33,24 @@ export function Home() {
     <div className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center py-10">
       <div className="flex w-full max-w-[420px] flex-col items-stretch gap-7 px-3 text-center">
         <div className="flex flex-col items-center gap-2.5">
-          <button
-            type="button"
-            onClick={() => navigate("/menu")}
-            className="cursor-pointer border-none bg-transparent p-0"
-            style={{
-              color: "var(--practice-accent)",
-              fontFamily: "var(--practice-ui-font)",
-              fontSize: "clamp(44px, 12vw, 52px)",
-              fontWeight: 700,
-              lineHeight: 1,
-              letterSpacing: "-0.02em",
-            }}
-            aria-label="Start practicing"
-          >
-            <span style={{ color: "var(--color-primary-dark-light)" }}>Kana</span>Reps
-          </button>
+          <h1 className="m-0">
+            <button
+              type="button"
+              onClick={() => navigate("/menu")}
+              className="cursor-pointer border-none bg-transparent p-0"
+              style={{
+                color: "var(--practice-accent)",
+                fontFamily: "var(--practice-ui-font)",
+                fontSize: "clamp(44px, 12vw, 52px)",
+                fontWeight: 700,
+                lineHeight: 1,
+                letterSpacing: "-0.02em",
+              }}
+              aria-label="Start practicing"
+            >
+              <span style={{ color: "var(--color-primary-dark-light)" }}>Kana</span>Reps
+            </button>
+          </h1>
           <p
             style={{
               color: "var(--practice-text-secondary)",

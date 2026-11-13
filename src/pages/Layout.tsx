@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { CSSProperties, ReactNode } from "react";
 import { Moon, Sun } from "lucide-react";
@@ -11,6 +12,12 @@ export function Layout({ children }: { children: ReactNode }) {
   const { mode, toggleMode } = useColorMode();
   const { pathname } = useLocation();
   const fullWidthMain = pathname === "/custom";
+
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="robots"]');
+    if (!(meta instanceof HTMLMetaElement)) return;
+    meta.content = pathname === "/" ? "index, follow" : "noindex, nofollow";
+  }, [pathname]);
 
   const navLinks: { href: string; label: string }[] = [
     { href: "/menu", label: "Menu" },
