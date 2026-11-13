@@ -53,6 +53,13 @@ export function ColorModeProvider({ children }: { children: ReactNode }) {
   useLayoutEffect(() => {
     document.documentElement.classList.toggle("dark", mode === "dark");
     applyThemeCssVars(mode);
+    const icon = document.getElementById("favicon");
+    if (icon) {
+      icon.setAttribute(
+        "href",
+        mode === "light" ? "/favicon.svg" : "/favicon-dark.svg"
+      );
+    }
   }, [mode]);
 
   const muiTheme = useMemo(

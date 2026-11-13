@@ -100,6 +100,7 @@
   --color-writing-stroke: #e2e8f0;
   --color-writing-panel-bg: rgba(76, 29, 149, 0.28);
   --color-writing-hint: #94a3b8;
+  --color-primary-dark-light: #F1F5F9;
 
   /* Shared Washi / Dark design system — Modern Dark (dark).
      Washi-small radii kept across both themes via --practice-radius. */

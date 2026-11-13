@@ -47,7 +47,7 @@ export function Home() {
             }}
             aria-label="Start practicing"
           >
-            KanaReps
+            <span style={{ color: "var(--color-primary-dark-light)" }}>Kana</span>Reps
           </button>
           <p
             style={{

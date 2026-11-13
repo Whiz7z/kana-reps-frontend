@@ -4,6 +4,7 @@ import { Moon, Sun } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useColorMode } from "@/context/ColorModeContext";
 import { cn } from "@/lib/utils";
+import { LogoMark } from "@/components/ui/LogoMark";
 
 export function Layout({ children }: { children: ReactNode }) {
   const { user, startGoogleLogin, logout } = useAuth();
@@ -35,7 +36,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-3 lg:px-8">
           <Link
             to="/"
-            className="font-bold tracking-tight"
+            className="font-bold tracking-tight flex items-center gap-2"
             style={{
               color: "var(--practice-accent)",
               fontFamily: "var(--practice-ui-font)",
@@ -43,7 +44,13 @@ export function Layout({ children }: { children: ReactNode }) {
               letterSpacing: "-0.01em",
             }}
           >
-            KanaReps
+            {/* <img
+              src={mode === "dark" ? "/favicon-dark.svg" : "/favicon.svg"}
+              alt="KanaReps"
+              className="h-8 w-8"
+            /> */}
+            <LogoMark variant={mode === "dark" ? "dark" : "light"} />
+            <span><span style={{ color: "var(--color-primary-dark-light)" }}>Kana</span>Reps</span>
           </Link>
           <nav className="flex flex-wrap items-center gap-1.5 sm:gap-1.5">
             {navLinks.map((l) => (
